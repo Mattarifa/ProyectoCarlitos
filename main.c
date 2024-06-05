@@ -386,7 +386,7 @@ void mostrarVentas()
         printf("error");
     }
 }
-void Autos10anos()
+void Autos10anos() ///3.m
 {
     AutoArchivo aut;
     FILE*archi=fopen("autosArch","rb");
@@ -398,13 +398,14 @@ void Autos10anos()
               {
                   if(CURRENT_YEAR - aut.anio<10)
                 {
+                    autos[conta]=aut;
                     conta++;
                 }
               }
                 fclose(archi);
                 for(int i=0;i<conta;i++)
                 {
-                    for (int j=0;j<conta;j++)
+                    for (int j=i+1;j<conta;j++)
                     {
                         if(autos[i].anio<autos[j].anio)
                         {
@@ -415,7 +416,7 @@ void Autos10anos()
                     }
                 }
 
-            for(int k=0;k<conta;k++)
+            for(int i=0;i<conta;i++)
             {
                     printf("Patente:    %s-%d\n", aut.patente.letras, aut.patente.numeros);
                     printf("Marca:      %s\n", aut.marca);
