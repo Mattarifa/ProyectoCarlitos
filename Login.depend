@@ -1,0 +1,11 @@
+# depslib dependency file v1.0
+1716253595 source:c:\users\pc\onedrive\escritorio\programacion i\login\main.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+
+1716291873 source:c:\users\usuario\desktop\login\main.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+
