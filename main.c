@@ -2,11 +2,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <conio.h>
+#include <time.h>
 
-
+#define CURRENT_YEAR 2024
 #define LONGITUD 20
 
-/*typedef struct {        //patente
+typedef struct {        //patente
 	char letras[3];
 	int numeros;
 
@@ -58,15 +59,22 @@ typedef struct {        //venta
 	int dniComprador;
 	int dniVendedor;
 
-} Venta;*/
+} Venta;
 void registrarse();
 void login(char*,char*,int*,int*);
+void agregarAutoArchivo();
+void agregarPersonas();
+void mostrarAutoArchivo();
+void mostrarPersonas();
+void agregarVentas();
+void mostrarVentas();
 int main()
 {
 
     char usuario[LONGITUD + 1];
     char clave[LONGITUD + 1];
     char Archivlogin[]="personas.bin";
+    char ArchivAutos[]="autosArch.bin";
     int intento =0;
     int ingresa = 0;
     registrarse();
@@ -171,7 +179,7 @@ void login(char *usuario, char *clave, int *intento, int *ingresa)
         fclose(archi);
 }
 
-/*void agregarAutoArchivo()
+void agregarAutoArchivo()
 {
     AutoArchivo autoArch;
     char c='s';
@@ -377,4 +385,48 @@ void mostrarVentas()
     {
         printf("error");
     }
-}*/
+}
+void Autos10anos()
+{
+    AutoArchivo aut;
+    FILE*archi=fopen("autosArch","rb");
+    int conta=0;
+    AutoArchivo autos[100];
+    if(archi!=NULL)
+    {
+        while(fread(&aut,sizeof(AutoArchivo),1,archi))
+              {
+                  if(CURRENT_YEAR - aut.anio<10)
+                {
+                    conta++;
+                }
+              }
+                fclose(archi);
+                for(int i=0;i<conta;i++)
+                {
+                    for (int j=0;j<conta;j++)
+                    {
+                        if(autos[i].anio<autos[j].anio)
+                        {
+                            AutoArchivo temp= autos[i];
+                            autos[i]=autos[j];
+                            autos[j]=temp;
+                        }
+                    }
+                }
+
+            for(int k=0;k<conta;k++)
+            {
+                    printf("Patente:    %s-%d\n", aut.patente.letras, aut.patente.numeros);
+                    printf("Marca:      %s\n", aut.marca);
+                    printf("Modelo:     %s\n", aut.modelo);
+                    printf("Anio:       %d\n", aut.anio);
+                    printf("Kms:        %d\n", aut.kms);
+                    printf("DniTitular: %d\n", aut.dniTitular);
+                    printf("PrecioAdq:  %.2f\n", aut.precioDeAdquisicion);
+            }
+
+
+
+}
+}
