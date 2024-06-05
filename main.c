@@ -97,7 +97,7 @@ void registrarse()
 
     printf("\n\tIngrese un nombre de usuario: ");
     fgets(usuario,LONGITUD+1,stdin);
-    usuario[strcspn(usuario, "\n")]='\0';///strcspn(usuario, "\n") devuelve la posici�n del primer car�cter en usuario que es /n, /0 para eliminar el salto de linea
+    usuario[strcspn(usuario, "\n")]='\0';///strcspn(usuario, "\n") devuelve la posición del primer carácter en usuario que es /n, /0 para eliminar el salto de linea
 
     printf("\n\tIngrese una contrasena: ");
     fgets(clave,LONGITUD+1,stdin);
@@ -204,7 +204,7 @@ void agregarAutoArchivo()
             fflush(stdin);
             scanf("%s",&autoArch.modelo);
 
-            printf("ingrese el año del auto\n");
+            printf("ingrese el aÃ±o del auto\n");
             scanf("%d",&autoArch.anio);
 
             printf("ingrese el kilometraje del auto\n");
@@ -404,7 +404,7 @@ void Autos10anos()
                 fclose(archi);
                 for(int i=0;i<conta;i++)
                 {
-                    for (int j=0;j<conta;j++)
+                    for (int j=i+1;j<conta;j++)
                     {
                         if(autos[i].anio<autos[j].anio)
                         {
