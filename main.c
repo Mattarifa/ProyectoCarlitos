@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <conio.h>
+#include <time.h>
 
-
+#define CURRENT_YEAR 2024
 
 #define LONGITUD 20
 
@@ -59,6 +61,26 @@ typedef struct {        //venta
 
 } Venta;
 
+void menu();
+void registrarse();
+void login(char*,char*,int*,int*);
+void agregarAutoArchivo();
+void agregarPersonas();
+void mostrarAutoArchivo();
+void mostrarPersonas();
+void agregarVentas();
+void mostrarVentas();
+void modificarAuto(int);
+void modificarPersona(int);
+void infoPersona();
+void infoAuto();
+void verVentas();
+void infoVenta(int);
+void agregarAuto();
+float recaudadoEnDeterminadoMes(int,int);
+float mayorGanancia();
+void Autos10anos();
+
 int main()
 {
 
@@ -81,36 +103,79 @@ void menu()
     int a;
     while(c=='s')
     {
-        printf("ingrese que desea hacer:");
+        printf("ingrese que desea hacer:\n");
+        printf("____________________________\n");
+        printf("Agregar un auto: \t(1) |\n");
+        printf("Ver lista de autos: \t(2) |\n");
+        printf("Modificar un auto: \t(3) |\n");
+        printf("Ver info de un auto: \t(4) |\n");
+        printf("Agregar una persona: \t(5) |\n");
+        printf("Modificar una persona:\t(6) |\n");
+        printf("ver lista de personas:\t(7) |\n");
+        printf("ver info de persona:  \t(8) |\n");
+        printf("ver autos en venta:  \t(9) |\n"); //con dni hardcodeado de consecionaria
+        printf("Ver ventas:\t\t(10)|\n");
+        printf("Agregar una venta:\t(11)|\n");
+        printf("Recaudado en un mes\t(12)|\n");
+        printf("Ver antiguedad de auto:\t(13)|\n");
         scanf("%d",&a);
         switch(a)
         {
             case 1:
-                //modificarAuto(1);
-                agregarAutoArchivo();
+                agregarAuto();
                 mostrarAutoArchivo();
             break;
             case 2:
-                //agregarPersonas();
-                //modificarPersona(0);
-                mostrarPersonas();
+                mostrarAutoArchivo();
             break;
             case 3:
-                    infoPersona();
+                mostrarAutoArchivo();
+                printf("ingrese la pos del auto a modificar:");
+                modificarAuto(pos);
+
             break;
             case 4:
                 mostrarAutoArchivo();
-                    infoAuto();
+                infoAuto();
             break;
             case 5:
-                agregarVentas();
-                verVentas();
+                agregarPersonas();
+                mostrarPersonas();
             break;
             case 6:
-                infoVenta(0);
+                mostrarPersonas();
+                modificarPersona(pos);
             break;
             case 7:
-                agregarAuto();
+                mostrarPersonas();
+            break;
+            case 8:
+                mostrarPersonas();
+                infoPersona();
+            break;
+            case 9:
+                if() /*dni titular consecionaria*/
+                {
+                    //hacer funcion de filtro
+                }
+            break;
+            case 10:
+                verVentas();
+            break;
+            case 11:
+                agregarVentas();
+            break;
+            case 12:
+                int mes,anio;
+
+                printf("ingrese mes:");
+                scanf("%d",&mes);
+                printf("ingrese anio:");
+                scanf("%d",&anio);
+                recaudadoEnDeterminadoMes(mes,anio);
+            break;
+            case 13:
+                Autos10anos();
             break;
             default:
 
@@ -126,24 +191,59 @@ void registrarse()
     FILE *archivos= fopen("personas.bin","ab");
     if(archivos==NULL)
     {
-
-    }
-    else
-    {
         printf("error");
     }
+
+    char usuario[LONGITUD +1];
+    char clave[LONGITUD+1];
+
+    printf("\n\tIngrese un nombre de usuario: ");
+    fgets(usuario,LONGITUD+1,stdin);
+    usuario[strcspn(usuario, "\n")]='\0';///strcspn(usuario, "\n") devuelve la posición del primer carácter en usuario que es /n, /0 para eliminar el salto de linea
+
+    printf("\n\tIngrese una contrasena: ");
+    fgets(clave,LONGITUD+1,stdin);
+    clave[strcspn(clave,"\n")]='\0';
+
+    fwrite(usuario,sizeof(char),LONGITUD+1,archivos);
+    fwrite(clave,sizeof(char),LONGITUD+1,archivos);
+    printf("\n\t\t---------------------------------");
+    printf("\n\t\tUsuario registrado correctamente");
+    printf("\n\t\t---------------------------------");
+
+    fclose(archivos);
+
+
+
+
 }
 
-void login(char *usuario, char *clave, int *intento, int *ingresa, char caracter)
+void login(char *usuario, char *clave, int *intento, int *ingresa)
 {
+
+    FILE*archi=fopen("personas.bin","rb");
+    char archivoUsuario[LONGITUD+1];
+    char archivoClave[LONGITUD+1];
+    if (archi == NULL)
+    {
+        printf("Error al abrir el archivo\n");
+        return;
+    }
+
+
+
+
     int i=0;
-    do{
+
         printf ("\n\t\t\tINICIO DE SESION\n");
         printf ("\t\t\t----------------\n");
         printf("\n\tUSUARIO: ");
-        gets(usuario);
-        printf("\tCLAVE: ");
-        while (caracter = getch()){
+        fgets(usuario,LONGITUD+1,stdin);
+        usuario[strcspn(usuario,"\n")]='\0';
+        printf("\n\tCLAVE: ");
+
+        while (1){
+            char caracter = getch();
             if(caracter==13){
                 clave[i]='\0';
                 break;
@@ -162,17 +262,23 @@ void login(char *usuario, char *clave, int *intento, int *ingresa, char caracter
             }
         }
 
-    if(strcmp(usuario,"c")== 0 && strcmp(clave,"carlitos")== 0){
-        *ingresa =1;
-        printf ("\n\t\tBIENVENIDO A INMOBILIARIA CURSED\n");
-        printf ("\t\t----------------------------------\n");
-
-    }else{
-        printf ("\n\t\tUSUARIO Y/O CONTRASENIA INCORRECTOS\n");
-        (*intento)++;
-
+         int autenticado=0;
+    while (fread(archivoUsuario, sizeof(char), LONGITUD + 1, archi) &&
+           fread(archivoClave, sizeof(char), LONGITUD + 1, archi)) {
+        if (strcmp(usuario, archivoUsuario) == 0 && strcmp(clave, archivoClave) == 0) {
+            autenticado=1;
+            break;
+        }
     }
-    }while (*intento <3 && *ingresa == 0);
+        if (autenticado){
+            *ingresa=1;
+           printf("\n\t\tBIENVENIDO A INMOBILIARIA Carlitos\n");
+           printf("\t\t----------------------------------\n");
+        }else{
+            printf("\n\t\tCONTRASENA Y/O USUARIO INCORRECTO");
+            (*intento)++;
+        }
+        fclose(archi);
 }
 
 void agregarAutoArchivo()
@@ -185,15 +291,15 @@ void agregarAutoArchivo()
         while(c=='s')
         {
             printf("ingrese las letras de la patente: ");
-            scanf("%s",&autoArch.patente.letras);
+            scanf("%s",autoArch.patente.letras);
             printf("ingrese los numeros de la patente: ");
             scanf("%d",&autoArch.patente.numeros);
 
             printf("ingrese la marca del auto: ");
-            scanf("%s",&autoArch.marca);
+            scanf("%s",autoArch.marca);
 
             printf("ingrese el modelo del auto: ");
-            scanf("%s",&autoArch.modelo);
+            scanf("%s",autoArch.modelo);
 
             printf("ingrese el anio del auto: ");
             scanf("%d",&autoArch.anio);
@@ -236,10 +342,10 @@ void agregarPersonas()
             scanf("%d",&p.dni);
             printf("ingrese el nombre: ");
             fflush(stdin);
-            scanf("%s",&p.nombre);
+            scanf("%s",p.nombre);
             printf("ingrese el apellido: ");
             fflush(stdin);
-            scanf("%s",&p.apellido);
+            scanf("%s",p.apellido);
 
             printf("ingrese telefono: ");
             fflush(stdin);
@@ -247,10 +353,10 @@ void agregarPersonas()
 
             printf("ingrese la direccion de la persona: ");
             fflush(stdin);
-            scanf("%s",&p.direccion);
+            scanf("%s",p.direccion);
 
             printf("ingrese el rol: ");
-            scanf("%s",&p.rol);
+            scanf("%s",p.rol);
 
             printf("desea continuar?(s/n): ");
             fflush(stdin);
@@ -324,7 +430,7 @@ void agregarVentas()
 
             printf("ingrese las letras de la patente del auto a vender\n");
             fflush(stdin);
-            scanf("%s",&v.autoAVender.letras);
+            scanf("%s",v.autoAVender.letras);
             printf("ingrese los numeros de la patente del auto a vender\n");
             scanf("%d",&v.autoAVender.numeros);
 
@@ -402,17 +508,17 @@ void modificarAuto(int pos)
                 case 'p':
                         printf("Ingrese la patente: ");
                         fflush(stdin);
-                        scanf("%s %d", &autoArch.patente.letras, &autoArch.patente.numeros);
+                        scanf("%s %d", autoArch.patente.letras, &autoArch.patente.numeros);
                 break;
                 case 'm':
                         printf("Ingrese una nueva marca: "),
                         fflush(stdin);
-                        scanf("%s", &autoArch.marca);
+                        scanf("%s", autoArch.marca);
                 break;
                 case 'x':
                         printf("Ingrese un nuevo modelo: ");
                         fflush(stdin);
-                        scanf("%s", &autoArch.modelo);
+                        scanf("%s", autoArch.modelo);
                 break;
                 case 'a':
                         printf("Ingrese nuevo anio: ");
@@ -428,7 +534,7 @@ void modificarAuto(int pos)
                 break;
                 case 'v':
                         printf("Ingrese el nuevo precio: ");
-                        scanf("%d", &autoArch.precioDeAdquisicion);
+                        scanf("%f", &autoArch.precioDeAdquisicion);
                 break;
                 default:
                         printf("Error \n");
@@ -470,12 +576,12 @@ void modificarPersona(int pos)
                 case 'n':
                         printf("Ingrese nuevo nombre: ");
                         fflush(stdin);
-                        scanf("%s", &persona.nombre);
+                        scanf("%s", persona.nombre);
                 break;
                 case 'd':
                         printf("Ingrese una nueva direccion: "),
                         fflush(stdin);
-                        scanf("%s", &persona.direccion);
+                        scanf("%s", persona.direccion);
                 break;
                 case 'x':
                         printf("Ingrese un nuevo dni: ");
@@ -488,12 +594,12 @@ void modificarPersona(int pos)
                 break;
                 case 'r':
                         printf("Ingrese un nuevo rol(c/v): ");
-                        scanf("%s", &persona.rol);
+                        scanf("%s", persona.rol);
                         while(strcmp(persona.rol,"comprador")!=0 && strcmp(persona.rol,"vendedor")!=0)
                         {
                         printf("Ingrese un caracter valido(c/v): ");
                         fflush(stdin);
-                        scanf("%s", &persona.rol);
+                        scanf("%s", persona.rol);
                         }
                 break;
                 default:
@@ -560,7 +666,7 @@ void infoAuto ()
     {
         printf("Ingrese las letras de la patente: ");
         fflush(stdin);
-        scanf("%s", &letras);
+        scanf("%s", letras);
         printf("Ingrese los numeros de la patente: ");
         scanf("%d", &num);
 
@@ -658,17 +764,17 @@ void agregarAuto ()
         {
             printf("ingrese las letras de la patente: ");
             fflush(stdin);
-            scanf("%s",&autito.patente.letras);
+            scanf("%s",autito.patente.letras);
             printf("ingrese los numeros de la patente: ");
             scanf("%d",&autito.patente.numeros);
 
             printf("ingrese la marca del auto: ");
             fflush(stdin);
-            scanf("%s",&autito.marca);
+            scanf("%s",autito.marca);
 
             printf("ingrese el modelo del auto: ");
             fflush(stdin);
-            scanf("%s",&autito.modelo);
+            scanf("%s",autito.modelo);
 
             printf("ingrese el anio del auto: ");
             scanf("%d",&autito.anio);
@@ -677,11 +783,11 @@ void agregarAuto ()
             scanf("%d",&autito.kms);
 
             printf("ingrese el nombre del titular del auto: ");
-            scanf("%s",&autito.Titular.nombre);
+            scanf("%s",autito.Titular.nombre);
 
             printf("ingrese el apellido del titular del auto: ");
             fflush(stdin);
-            scanf("%s", &autito.Titular.apellido);
+            scanf("%s", autito.Titular.apellido);
 
             printf("ingrese dni del titular del auto: ");
             scanf("%d", &autito.Titular.dni);
@@ -690,7 +796,7 @@ void agregarAuto ()
             scanf("%d", &autito.Titular.telefono);
 
             printf("ingrese direccion del titular del auto: ");
-            scanf("%s", &autito.Titular.direccion);
+            scanf("%s", autito.Titular.direccion);
 
             printf("ingrese el precio de adquisicion del auto: ");
             scanf("%f",&autito.precioDeAdquisicion);
@@ -757,6 +863,51 @@ float mayorGanancia ()
     {
         printf("ERROR: No se pudo abrir el archivo");
     }
+return mayor;
+}
 
+void Autos10anos()
+{
+    AutoArchivo aut;
+    FILE*archi=fopen("autosArch","rb");
+    int conta=0;
+    AutoArchivo autos[100];
+    if(archi!=NULL)
+    {
+        while(fread(&aut,sizeof(AutoArchivo),1,archi))
+              {
+                  if(CURRENT_YEAR - aut.anio<10)
+                {
+                    conta++;
+                }
+              }
+                fclose(archi);
+                for(int i=0;i<conta;i++)
+                {
+                    for (int j=i+1;j<conta;j++)
+                    {
+                        if(autos[i].anio<autos[j].anio)
+                        {
+                            AutoArchivo temp= autos[i];
+                            autos[i]=autos[j];
+                            autos[j]=temp;
+                        }
+                    }
+                }
+
+            for(int k=0;k<conta;k++)
+            {
+                    printf("Patente:    %s-%d\n", aut.patente.letras, aut.patente.numeros);
+                    printf("Marca:      %s\n", aut.marca);
+                    printf("Modelo:     %s\n", aut.modelo);
+                    printf("Anio:       %d\n", aut.anio);
+                    printf("Kms:        %d\n", aut.kms);
+                    printf("DniTitular: %d\n", aut.dniTitular);
+                    printf("PrecioAdq:  %.2f\n", aut.precioDeAdquisicion);
+            }
+
+
+
+}
 }
 
