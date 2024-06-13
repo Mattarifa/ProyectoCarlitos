@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <conio.h>
-#include <time.h>
 
 #define CURRENT_YEAR 2024
 
@@ -164,22 +163,24 @@ void menu()
 
     while(c=='s')
     {
-        printf("ingrese que desea hacer:\n");
-        printf("____________________________\n");
-        printf("Agregar un auto: \t(1) |\n");
-        printf("Ver lista de autos: \t(2) |\n");
-        printf("Modificar un auto: \t(3) |\n");
-        printf("Ver info de un auto: \t(4) |\n");
-        printf("Agregar una persona: \t(5) |\n");
-        printf("Modificar una persona:\t(6) |\n");
-        printf("ver lista de personas:\t(7) |\n");
-        printf("ver info de persona:  \t(8) |\n");
-        printf("ver autos en venta:  \t(9) |\n"); //con dni hardcodeado de consecionaria
-        printf("Ver ventas:\t\t(10)|\n");
-        printf("ver info de una venta:\t(11)|\n");
-        printf("Agregar una venta:\t(12)|\n");
-        printf("Recaudado en un mes\t(13)|\n");
-        printf("Ver antiguedad de auto:\t(14)|\n");
+        printf("\n\tingrese que desea hacer:\n");
+        printf("\t____________________________\n");
+        printf("\tAgregar un auto: \t(1) |\n");
+        printf("\tVer lista de autos: \t(2) |\n");
+        printf("\tModificar un auto: \t(3) |\n");
+        printf("\tVer info de un auto: \t(4) |\n");
+        printf("\tAgregar una persona: \t(5) |\n");
+        printf("\tModificar una persona:\t(6) |\n");
+        printf("\tver lista de personas:\t(7) |\n");
+        printf("\tver info de persona:  \t(8) |\n");
+        printf("\tver autos en venta:  \t(9) |\n"); //con dni hardcodeado de consecionaria
+        printf("\tVer ventas:\t\t(10)|\n");
+        printf("\tver info de una venta:\t(11)|\n");
+        printf("\tAgregar una venta:\t(12)|\n");
+        printf("\tRecaudado en un mes\t(13)|\n");
+        printf("\tVer antiguedad de auto:\t(14)|\n");
+        printf("\tVer la mayor ganancia:\t(15)|\n");
+        printf("\tSi desea salir:\t\t(16)|\n");
         scanf("%d",&a);
         switch(a)
         {
@@ -289,10 +290,15 @@ void menu()
             case 14:
                 Autos10anos();
             break;
-		case 15:
-                printf("La mayor ganancia registrada fue de %.2f pesos",mayorGanancia());
+            case 15:
+                    printf("La mayor ganancia fue de %d pesos",mayorGanancia());
             break;
+		  case 16:
+            printf("\n\tHasta pronto");
+            return;
+
             default:
+		    printf("\n\tIngrese una opcion valida o presione n para salir");
 
             break;
         }
@@ -378,13 +384,13 @@ int login(char *usuario, char *clave)
         }
 
          int autenticado=0;
-    while (fread(archivoUsuario, sizeof(char), LONGITUD + 1, archi) &&
+   while (fread(archivoUsuario, sizeof(char), LONGITUD + 1, archi) &&
            fread(archivoClave, sizeof(char), LONGITUD + 1, archi)) {
         if (strcmp(usuario, archivoUsuario) == 0 && strcmp(clave, archivoClave) == 0) {
             autenticado=1;
             break;
         }
-           }
+         }
         fclose(archi);
         return autenticado;
 }
@@ -438,26 +444,65 @@ void agregarAuto(Auto** autos, int* count) {
     char seguir = 's';
 
     while (seguir == 's') {
-        printf("Ingrese las letras de la patente: ");
+       printf("Ingrese las letras de la patente: ");
         scanf("%s", autito.patente.letras);
+        while(strlen(autito.patente.letras)!=3)
+        {
+            printf("Error: Ingrese letras validas a la patente: ");
+            fflush(stdin);
+            scanf("%s", &autito.patente.letras);
+        }
 
         printf("Ingrese los numeros de la patente: ");
         scanf("%d", &autito.patente.numeros);
+        while(autito.patente.numeros < 100 || autito.patente.numeros > 999)
+        {
+            printf("Error: ingrese numeros validos para la patente: ");
+            scanf("%d", &autito.patente.numeros);
+        }
 
         printf("Ingrese la marca del auto: ");
         scanf("%s", autito.marca);
+        while(strlen(autito.marca)<4)
+        {
+            printf("Error: Ingrese una marca valida: ");
+            fflush(stdin);
+            scanf("%s", &autito.marca);
+        }
 
         printf("Ingrese el modelo del auto: ");
-        scanf("%s", autito.modelo);
+        scanf("%s", &autito.modelo);
+        while(strlen(autito.modelo)<4)
+        {
+            printf("Error: Ingrese un modelo valido: ");
+            fflush(stdin);
+            scanf("%s", &autito.modelo);
+        }
 
         printf("Ingrese el anio del auto: ");
         scanf("%d", &autito.anio);
+        while(autito.anio < 1900 || autito.anio > 2024)
+        {
+            printf("Error: Ingrese un anio valido para el auto: ");
+            scanf("%d", &autito.anio);
+        }
 
         printf("Ingrese el kilometraje del auto: ");
         scanf("%d", &autito.kms);
+        while(autito.kms < 0)
+        {
+            printf("Error: Ingrese un kilometraje valido para el auto: ");
+            scanf("%d", &autito.kms);
+        }
 
         printf("Ingrese DNI del titular del auto: ");
         scanf("%d", &autito.Titular.dni);
+        while(autito.Titular.dni < 1000000)
+        {
+            printf("Error: Ingresa un dni valido (mayor a 1 millon): ");
+            scanf("%d", &autito.Titular.dni);
+        }
+
 
         if (buscarPersonaPorDNI(autito.Titular.dni, &titular) || autito.Titular.dni == consecionariaDNI)
             {
@@ -476,6 +521,12 @@ void agregarAuto(Auto** autos, int* count) {
 
             printf("Ingrese el precio de adquisicion del auto: ");
             scanf("%f", &autito.precioDeAdquisicion);
+            while(autito.precioDeAdquisicion < 0)
+            {
+                printf("Error: Ingrese un precio de adquisicion valido: ");
+                scanf("%f", &autito.precioDeAdquisicion);
+            }
+
 
             *autos = realloc(*autos, (*count + 1) * sizeof(Auto));
             if (*autos == NULL)
@@ -522,7 +573,7 @@ void agregarPersonas()
 {
     Persona p;
     char c='s';
-    FILE* archivo = fopen("personas.bin","wb");
+    FILE* archivo = fopen("personas.bin","ab");
     if (archivo != NULL) {
         while (c == 's' || c == 'S') {
             printf("Ingrese el DNI: ");
@@ -988,7 +1039,14 @@ void Autos10anos() {
         while (fread(&autoTemp, sizeof(AutoArchivo), 1, archi) > 0) {
             if (CURRENT_YEAR - autoTemp.anio < 10) {
                 if (conta < 100) {
-                    autos[conta] = autoTemp;
+                    autos[conta].dniTitular = autoTemp.dniTitular;
+                    autos[conta].anio = autoTemp.anio;
+                    autos[conta].kms = autoTemp.kms;
+                    autos[conta].precioDeAdquisicion = autoTemp.precioDeAdquisicion;
+                    strcpy(autos[conta].marca,autoTemp.marca);
+                    strcpy(autos[conta].modelo,autoTemp.modelo);
+                    strcpy(autos[conta].patente.letras,autoTemp.patente.letras);
+                    autos[conta].patente.numeros = autoTemp.patente.numeros;
                     conta++;
                 } else {
                     printf("Error: Se alcanzó el límite de almacenamiento de autos.\n");
