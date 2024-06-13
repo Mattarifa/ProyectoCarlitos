@@ -102,12 +102,14 @@ void iniciarPrograma(){
     int intento=0;
     int ingresa=0;
     int opcion;
-    printf("\n\tSi desea registrarse ingrese 1, para logearse ingrese 2: ");
+    printf("\n\tSi desea registrarse ingrese 1, para logearse ingrese 2:\n ");
     scanf("%d",&opcion);
     fflush(stdin);
     switch(opcion){
     case 1:
         registrarse();
+        printf("\n\tSi desea logearse ingrese 2, si desea salir ingrese 3: \n");
+        scanf("%d",&opcion);
         break;
     case 2:
     while(!ingresa && intento<3){
@@ -120,6 +122,8 @@ void iniciarPrograma(){
         }
     }
         break;
+    case 3:
+        printf("\n\tQue tenga un lindo dia :D");
     }
 }
 void menu()
