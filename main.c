@@ -62,6 +62,7 @@ typedef struct {        //venta
 
 } Venta;
 
+void iniciarPrograma();
 void menu();
 void registrarse();
 int login(char*,char*);
