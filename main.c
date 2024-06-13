@@ -221,14 +221,14 @@ void registrarse()
 
 void login(char *usuario, char *clave, int *intento, int *ingresa)
 {
-
+    int flag=0;
     FILE*archi=fopen("personas.bin","rb");
     char archivoUsuario[LONGITUD+1];
     char archivoClave[LONGITUD+1];
     if (archi == NULL)
     {
         printf("Error al abrir el archivo\n");
-        return;
+        flag=1;
     }
 
 
