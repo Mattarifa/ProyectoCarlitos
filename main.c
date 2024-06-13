@@ -102,7 +102,9 @@ void iniciarPrograma(){
     int intento=0;
     int ingresa=0;
     int opcion;
-    printf("\n\tSi desea registrarse ingrese 1, para logearse ingrese 2:\n ");
+    printf("\n\t\t-------------------------------------------------------\n");
+    printf("\n\t\tSi desea registrarse ingrese 1, para logearse ingrese 2:\n ");
+    printf("\n\t\t-------------------------------------------------------\n");
     scanf("%d",&opcion);
     fflush(stdin);
     switch(opcion){
@@ -312,7 +314,8 @@ void registrarse()
 
     char usuario[LONGITUD +1];
     char clave[LONGITUD+1];
-
+    printf("\n\t\t\tREGISTRO\n");
+    printf("\n\t\t\t--------\n");
     printf("\n\tIngrese un nombre de usuario: ");
     fgets(usuario,LONGITUD+1,stdin);
     usuario[strcspn(usuario, "\n")]='\0';///strcspn(usuario, "\n") devuelve la posición del primer carácter en usuario que es /n, /0 para eliminar el salto de linea
@@ -348,8 +351,8 @@ int login(char *usuario, char *clave)
 
     int i=0;
 
-        printf ("\n\t\t\tINICIO DE SESION\n");
-        printf ("\t\t\t----------------\n");
+        printf ("\n\t\t\t\tINICIO DE SESION\n");
+        printf ("\t\t\t\t----------------\n");
         printf("\n\tUSUARIO: ");
         fgets(usuario,LONGITUD+1,stdin);
         usuario[strcspn(usuario,"\n")]='\0';
