@@ -141,33 +141,30 @@ void iniciarPrograma(){
     }
 }
 
-void menu()
-{
-    char c='s';
-    int a;
-    int pos;
-    while(c=='s')
+while(c=='s')
     {
-        printf("\n\tingrese que desea hacer:\n");
+        printf("\ningrese que desea hacer:\n");
         printf("____________________________\n");
-        printf("\n\tAgregar un auto: \t(1) |\n");
-        printf("\n\tVer lista de autos: \t(2) |\n");
-        printf("\n\tModificar un auto: \t(3) |\n");
-        printf("\n\tVer info de un auto: \t(4) |\n");
-        printf("\n\tAgregar una persona: \t(5) |\n");
-        printf("\n\tModificar una persona:\t(6) |\n");
-        printf("\n\tver lista de personas:\t(7) |\n");
-        printf("\n\tver info de persona:  \t(8) |\n");
-        printf("\n\tver autos en venta:  \t(9) |\n"); //con dni hardcodeado de consecionaria
-        printf("\n\tVer ventas:\t\t(10)|\n");
-        printf("\n\tAgregar una venta:\t(11)|\n");
-        printf("\n\tRecaudado en un mes\t(12)|\n");
-        printf("\n\tVer antiguedad de auto:\t(13)|\n");
+        printf("Agregar un auto: \t(1) |\n");
+        printf("Ver lista de autos: \t(2) |\n");
+        printf("Modificar un auto: \t(3) |\n");
+        printf("Ver info de un auto: \t(4) |\n");
+        printf("Agregar una persona: \t(5) |\n");
+        printf("Modificar una persona:\t(6) |\n");
+        printf("ver lista de personas:\t(7) |\n");
+        printf("ver info de persona:  \t(8) |\n");
+        printf("ver autos en venta:  \t(9) |\n"); //con dni hardcodeado de consecionaria
+        printf("Ver ventas:\t\t(10)|\n");
+        printf("ver info de una venta:\t(11)|\n");
+        printf("Agregar una venta:\t(12)|\n");
+        printf("Recaudado en un mes\t(13)|\n");
+        printf("Ver antiguedad de auto:\t(14)|\n");
         scanf("%d",&a);
         switch(a)
         {
             case 1:
-                agregarAuto();
+                agregarAuto(&autos, &count);
+                agregarAutoArchivo(autos, count);
                 mostrarAutoArchivo();
             break;
             case 2:
@@ -175,13 +172,34 @@ void menu()
             break;
             case 3:
                 mostrarAutoArchivo();
-                printf("ingrese la pos del auto a modificar:");
-                modificarAuto(pos);
-
+                printf("\ningrese la pos del auto a modificar:");
+                scanf("%d", &posAuto);
+                while(posAuto < 0)
+                {
+                    printf("\nError: ingrese un numero mayor a 0: ");
+                    scanf("%d", &posAuto);
+                }
+                modificarAuto(posAuto);
             break;
             case 4:
                 mostrarAutoArchivo();
-                infoAuto();
+                printf("\nIngrese las letras de la patente del auto que quiere ver:: ");
+                fflush(stdin);
+                scanf("%s", &patenteLetras[0]);
+                printf("\nIngrese los numeros de la petente del auto que quiere ver: ");
+                scanf("%d", &patenteNumeros);
+                while(patenteLetras[4] >= a)
+                {
+                    printf("\nERROR: Ingrese letras validas: ");
+                    fflush(stdin);
+                    scanf("%s", &patenteLetras[0]);
+                }
+                while(patenteNumeros > 999)
+                {
+                    printf("\nERROR: Ingrese numeros validos: ");
+                    scanf("%d", &patenteNumeros);
+                }
+                infoAuto(patenteLetras, patenteNumeros);
             break;
             case 5:
                 agregarPersonas();
@@ -189,44 +207,72 @@ void menu()
             break;
             case 6:
                 mostrarPersonas();
-                modificarPersona(pos);
+                scanf("%d", &posPersona);
+                while(posPersona < 0)
+                {
+                    printf("\nError: ingrese un numero mayor a 0: ");
+                    scanf("%d", &posPersona);
+                }
+                modificarPersona(posPersona);
             break;
             case 7:
                 mostrarPersonas();
             break;
             case 8:
                 mostrarPersonas();
-                infoPersona();
+                printf("\nIngrese dni de la persona que quiera ver: ");
+                scanf("%d", &dniPersona);
+                while(dniPersona < 0)
+                {
+                    printf("\nERROR: Ingrese un dni valido: ");
+                    scanf("%d", &dniPersona);
+                }
+                infoPersona(dniPersona);
             break;
             case 9:
-                /*if() /*dni titular consecionaria
-                {
-                    //hacer funcion de filtro
-                }*/
+                verAutosEnVenta();
             break;
             case 10:
                 verVentas();
             break;
             case 11:
+                printf("\nIngrese la posicion de la venta que quiera ver: ");
+                scanf("%d", &posVenta);
+                while(posVenta < 0)
+                {
+                    printf("\nERROR: Ingrese nuevamente la posicion: ");
+                    scanf("%d", &posVenta);
+                }
+                infoVenta(posVenta);
+            break;
+            case 12:
                 agregarVentas();
             break;
-            /*case 12:
-                int mes,anio;
-
-                printf("ingrese mes:");
-                scanf("%d",&mes);
-                printf("ingrese anio:");
-                scanf("%d",&anio);
-                recaudadoEnDeterminadoMes(mes,anio);
-            break;*/
             case 13:
+                printf("\ningrese mes:");
+                scanf("%d",&mes);
+                printf("\ningrese anio:");
+                scanf("%d",&anio);
+                while(mes < 1 || mes > 12)
+                {
+                    printf("\nERROR: Ingrese un mes valido: ");
+                    scanf("%d", &mes);
+                }
+                while(anio < 1999 || anio > 2024)
+                {
+                    printf("\nERROR: Ingrese un anio valido: ");
+                    scanf("%d", &anio);
+                }
+                recaudadoEnDeterminadoMes(mes,anio);
+            break;
+            case 14:
                 Autos10anos();
             break;
             default:
 
             break;
         }
-        printf("desea continuar?(s/n):");
+        printf("\nDesea continuar en el menu?(s/n):");
         fflush(stdin);
         scanf("%c",&c);
     }
@@ -759,13 +805,12 @@ void infoPersona (int dni)
 }
 
 
-void infoAuto ()
+void infoAuto (char letras[4], int num)
 {
     FILE* archi = fopen("autosArch.bin", "rb");
 
     AutoArchivo autoArch;
-    char letras[5];
-    int num=0;
+    
     int encontro=0;
 
     if(archi != NULL)
