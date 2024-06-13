@@ -113,7 +113,15 @@ void iniciarPrograma(){
         scanf("%d",&opcion);
         fflush(stdin);
         if (opcion == 2){
-            login(usuario,clave);
+        while(!ingresa && intento<3){
+        ingresa=login(usuario,clave);
+        if(!ingresa){
+            printf("\n\tUsuario y/o contrasenia incorrectos");
+            intento++;
+        }else if(ingresa){
+            menu();
+        }
+    }
         }
         break;
     case 2:
@@ -127,10 +135,12 @@ void iniciarPrograma(){
         }
     }
         break;
+
     case 3:
         printf("\n\tQue tenga un lindo dia :D");
     }
 }
+
 void menu()
 {
     char c='s';
