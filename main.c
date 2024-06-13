@@ -64,7 +64,7 @@ typedef struct {        //venta
 
 void menu();
 void registrarse();
-void login(char*,char*,int*,int*);
+int login(char*,char*);
 void agregarAutoArchivo();
 void agregarPersonas();
 void mostrarAutoArchivo();
@@ -90,13 +90,37 @@ int main()
     int intento =0;
     int ingresa = 0;
 
-    registrarse();
-    login(usuario, clave, &intento, &ingresa);
-    menu();
+    iniciarPrograma();
 
 
 
     return 0;
+}
+void iniciarPrograma(){
+    char usuario[LONGITUD +1];
+    char clave[ LONGITUD +1];
+    int intento=0;
+    int ingresa=0;
+    int opcion;
+    printf("\n\tSi desea registrarse ingrese 1, para logearse ingrese 2: ");
+    scanf("%d",&opcion);
+    fflush(stdin);
+    switch(opcion){
+    case 1:
+        registrarse();
+        break;
+    case 2:
+    while(!ingresa && intento<3){
+        ingresa=login(usuario,clave);
+        if(!ingresa){
+            printf("\n\tUsuario y/o contrasenia incorrectos");
+            intento++;
+        }else if(ingresa){
+            menu();
+        }
+    }
+        break;
+    }
 }
 void menu()
 {
@@ -220,7 +244,7 @@ void registrarse()
 
 }
 
-void login(char *usuario, char *clave, int *intento, int *ingresa)
+int login(char *usuario, char *clave)
 {
     int flag=0;
     FILE*archi=fopen("personas.bin","rb");
@@ -231,9 +255,6 @@ void login(char *usuario, char *clave, int *intento, int *ingresa)
         printf("Error al abrir el archivo\n");
         flag=1;
     }
-
-
-
 
     int i=0;
 
@@ -271,18 +292,10 @@ void login(char *usuario, char *clave, int *intento, int *ingresa)
             autenticado=1;
             break;
         }
-    }
-        if (autenticado){
-            *ingresa=1;
-           printf("\n\t\tBIENVENIDO A INMOBILIARIA Carlitos\n");
-           printf("\t\t----------------------------------\n");
-        }else{
-            printf("\n\t\tCONTRASENA Y/O USUARIO INCORRECTO");
-            (*intento)++;
-        }
+           }
         fclose(archi);
+        return autenticado;
 }
-
 void verAutosEnVenta()
 {
     AutoArchivo autoArch;
