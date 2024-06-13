@@ -284,10 +284,13 @@ void menu()
                     printf("ERROR: Ingrese un anio valido: ");
                     scanf("%d", &anio);
                 }
-                printf("%.2f",recaudadoEnDeterminadoMes(mes,anio));
+                printf("Lo recaudado en el mes %d del anio %d fue%.2f",mes,anio,recaudadoEnDeterminadoMes(mes,anio));
             break;
             case 14:
                 Autos10anos();
+            break;
+		case 15:
+                printf("La mayor ganancia registrada fue de %.2f pesos",mayorGanancia());
             break;
             default:
 
