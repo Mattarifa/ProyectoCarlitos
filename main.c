@@ -452,7 +452,7 @@ void agregarPersonas()
     FILE* archivo = fopen("personas.bin","ab");
     if (archivo != NULL) {
         while (c == 's' || c == 'S') {
-           printf("Ingrese el DNI: ");
+            printf("Ingrese el DNI: ");
             scanf("%d", &p.dni);
 
             printf("Ingrese el nombre y apellido: ");
@@ -508,13 +508,16 @@ void mostrarAutoArchivo()
 void mostrarPersonas()
 {
     Persona p;
+    int i=1;
     FILE* archivo = fopen("personas.bin", "rb");
 
     if(archivo!=NULL)
     {
         while(fread(&p, sizeof(Persona), 1, archivo) > 0)
         {
+
             printf("-------------\n");
+            printf("reg:%d\n",i++);
             printf("Dni:    \t%d\n", p.dni);
             printf("Nombre:      \t%s\n", p.nombre);
         }
@@ -603,9 +606,9 @@ void modificarAuto(int pos)
 
     if(archivo!=NULL)
     {
-        fseek(archivo, (pos)*sizeof(AutoArchivo), SEEK_SET);
+        fseek(archivo, (pos-1)*sizeof(AutoArchivo), SEEK_SET);
         fread(&autoArch, sizeof(AutoArchivo), 1, archivo);
-
+        fseek(archivo, (pos-1)*sizeof(AutoArchivo), SEEK_SET);
         while (seguir == 's')
         {
             printf("Que dato desea modificar? (p(patente)/m(marca)/x(modelo)/a(anio)/k(kms)/d(dni)/v(precio)): ");
@@ -652,7 +655,7 @@ void modificarAuto(int pos)
             fflush(stdin);
             scanf("%c", &seguir);
         }
-        fseek(archivo, (pos)*sizeof(AutoArchivo), SEEK_SET);
+        fseek(archivo, (pos-1)*sizeof(AutoArchivo), SEEK_SET);
         fwrite(&autoArch, sizeof(AutoArchivo),1,archivo);
         fclose(archivo);
     }
@@ -671,7 +674,7 @@ void modificarPersona(int pos)
 
     if(archivo!=NULL)
     {
-        fseek(archivo, (pos)*sizeof(Persona), SEEK_SET);
+        fseek(archivo, (pos-1)*sizeof(Persona), SEEK_SET);
         fread(&persona, sizeof(Persona), 1, archivo);
 
         while (seguir == 's')
@@ -683,14 +686,13 @@ void modificarPersona(int pos)
             switch(i)
             {
                 case 'n':
-                        printf("Ingrese nuevo nombre: ");
-                        fflush(stdin);
-                        scanf("%s", persona.nombre);
+                        printf("Ingrese nuevo nombre y apellido: ");
+                        scanf(" %39[^\n]", persona.nombre);
+
                 break;
                 case 'd':
                         printf("Ingrese una nueva direccion: "),
-                        fflush(stdin);
-                        scanf("%s", persona.direccion);
+                        scanf(" %29[^\n]", persona.direccion);
                 break;
                 case 'x':
                         printf("Ingrese un nuevo dni: ");
@@ -703,7 +705,7 @@ void modificarPersona(int pos)
                 break;
                 case 'r':
                         printf("Ingrese un nuevo rol(c/v): ");
-                        scanf("%s", persona.rol);
+                        scanf(" %10s", persona.rol);
                         while(strcmp(persona.rol,"comprador")!=0 && strcmp(persona.rol,"vendedor")!=0)
                         {
                         printf("Ingrese un caracter valido(c/v): ");
@@ -718,7 +720,7 @@ void modificarPersona(int pos)
             fflush(stdin);
             scanf("%c", &seguir);
         }
-        fseek(archivo, (pos)*sizeof(Persona), SEEK_SET);
+        fseek(archivo, (pos-1)*sizeof(Persona), SEEK_SET);
         fwrite(&persona, sizeof(Persona),1,archivo);
         fclose(archivo);
     }
@@ -728,21 +730,17 @@ void modificarPersona(int pos)
         }
 }
 
-void infoPersona ()
+void infoPersona (int dni)
 {
     FILE* archi = fopen("personas.bin", "rb");
 
     Persona persona;
-    int i=0;
 
     if(archi != NULL)
     {
-        printf("Ingrese el dni de la persona: ");
-        scanf("%d", &i);
-
         while(fread(&persona, sizeof(Persona), 1, archi)>0)
         {
-            if(i == persona.dni)
+            if(dni == persona.dni)
             {
                 printf("-------------\n");
                 printf("Dni:    \t%d\n", persona.dni);
@@ -838,20 +836,28 @@ void verVentas ()
 void infoVenta (int pos)
 {
     FILE* archi = fopen("ventas.bin", "rb");
-
     Venta ventas;
+    int aux;
 
+    aux= ftell(archi)/sizeof(Venta);
     if(archi != NULL)
     {
         fseek(archi, sizeof(Venta)*pos, SEEK_SET);
         fread(&ventas, sizeof(Venta), 1, archi);
+        if(pos <= aux)
+        {
         printf("\nFecha:        %d/%d/%d", ventas.fecha.dia, ventas.fecha.mes, ventas.fecha.anio);
         printf("\nPatente:      %s-%d", ventas.autoAVender.letras, ventas.autoAVender.numeros);
         printf("\nDNI comprador:%d", ventas.dniComprador);
         printf("\nDNI vendedor: %d", ventas.dniVendedor);
         printf("\nPrecio Venta: %.2f", ventas.precioVenta);
-        printf("\nGanancia:     %.2f", ventas.ganancia);
+        printf("\nGanancia:     %.2f\n", ventas.ganancia);
 
+        }
+        else
+        {
+            printf("esa posicion no existe\n");
+        }
     fclose(archi);
     }else
     {
@@ -946,5 +952,5 @@ void Autos10anos()
                     printf("DniTitular: %d\n", aut.dniTitular);
                     printf("PrecioAdq:  %.2f\n", aut.precioDeAdquisicion);
             }
-	}
+    }
 }
