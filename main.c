@@ -177,6 +177,7 @@ void menu()
         printf("\n\tAgregar una venta:\t(12)|\n");
         printf("\n\tRecaudado en un mes\t(13)|\n");
         printf("\n\tVer antiguedad de auto:\t(14)|\n");
+	printf("\n\tSi desea salir:\t(15)|\n");
         scanf("%d",&a);
         switch(a)
         {
@@ -286,7 +287,12 @@ void menu()
             case 14:
                 Autos10anos();
             break;
+	    case 15:
+		printf("\n\tHasta pronto");
+		return 1;
+		
             default:
+		    printf("\n\tIngrese una opcion valida o presione n para salir);
 
             break;
         }
