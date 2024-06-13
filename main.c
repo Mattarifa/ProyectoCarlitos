@@ -8,6 +8,8 @@
 
 #define LONGITUD 20
 
+int const consecionariaDNI = 12345678;
+
 typedef struct {        //patente
 	char letras[5];
 	int numeros;
@@ -27,10 +29,9 @@ typedef struct {        //guardar autos en memoria
 typedef struct {        //persona
 	int dni;
 	char nombre[40];
-	char apellido[40];
 	int telefono;
 	char direccion[30];
-	char rol[10]; //comprador o vendedor
+	char rol[11]; //comprador o vendedor
 
 } Persona;
 
@@ -282,88 +283,164 @@ void login(char *usuario, char *clave, int *intento, int *ingresa)
         fclose(archi);
 }
 
-void agregarAutoArchivo()
+void verAutosEnVenta()
 {
     AutoArchivo autoArch;
-    char c='s';
-    FILE* archivo = fopen("autosArch.bin","ab");
-    if(archivo!=NULL)
+    FILE * archi = fopen("autosArch.bin","rb");
+
+    if(archi!=NULL)
     {
-        while(c=='s')
+        while(fread(&autoArch,sizeof(AutoArchivo),1,archi))
         {
-            printf("ingrese las letras de la patente: ");
-            scanf("%s",autoArch.patente.letras);
-            printf("ingrese los numeros de la patente: ");
-            scanf("%d",&autoArch.patente.numeros);
-
-            printf("ingrese la marca del auto: ");
-            scanf("%s",autoArch.marca);
-
-            printf("ingrese el modelo del auto: ");
-            scanf("%s",autoArch.modelo);
-
-            printf("ingrese el anio del auto: ");
-            scanf("%d",&autoArch.anio);
-
-            printf("ingrese el kilometraje del auto: ");
-            scanf("%d",&autoArch.kms);
-
-            printf("ingrese el dni del titular del auto: ");
-            scanf("%d",&autoArch.dniTitular);
-
-            printf("ingrese el precio de adquisicion del auto: ");
-            scanf("%f",&autoArch.precioDeAdquisicion);
-
-            printf("desea continuar?(s/n): ");
-            fflush(stdin);
-            scanf("%c",&c);
-
-            fwrite(&autoArch,sizeof(AutoArchivo),1,archivo);
-            system("cls");
+            if(autoArch.dniTitular==consecionariaDNI)      //54123456
+            {
+                printf("-------------\n");
+                printf("Patente:    %s-%d\n", autoArch.patente.letras, autoArch.patente.numeros);
+                printf("Marca:      %s\n", autoArch.marca);
+                printf("Modelo:     %s\n", autoArch.modelo);
+            }
         }
-
-        fclose(archivo);
+        fclose(archi);
     }
     else
     {
-        printf("error no se pudo abrir el catalogo");
+        printf("No se pudo cargar la lista de autos");
     }
 }
+int buscarPersonaPorDNI(int dni, Persona* persona) {
+    int flag = 0;
+    Persona tempPersona;
+    FILE* archivo = fopen("personas.bin", "rb");
+    if (archivo != NULL) {
+        while (fread(&tempPersona, sizeof(Persona), 1, archivo) > 0) {
+            if (tempPersona.dni == dni) {
+                *persona = tempPersona;
+                flag = 1;
+                break;
+            }
+        }
+        fclose(archivo);
+    } else {
+        printf("NO se pudo abrir el archivo para buscar\n");
+    }
+
+    return flag;
+}
+
+void agregarAuto(Auto** autos, int* count) {
+    Auto autito;
+    Persona titular;
+    char seguir = 's';
+
+    while (seguir == 's') {
+        printf("Ingrese las letras de la patente: ");
+        scanf("%s", autito.patente.letras);
+
+        printf("Ingrese los numeros de la patente: ");
+        scanf("%d", &autito.patente.numeros);
+
+        printf("Ingrese la marca del auto: ");
+        scanf("%s", autito.marca);
+
+        printf("Ingrese el modelo del auto: ");
+        scanf("%s", autito.modelo);
+
+        printf("Ingrese el anio del auto: ");
+        scanf("%d", &autito.anio);
+
+        printf("Ingrese el kilometraje del auto: ");
+        scanf("%d", &autito.kms);
+
+        printf("Ingrese DNI del titular del auto: ");
+        scanf("%d", &autito.Titular.dni);
+
+        if (buscarPersonaPorDNI(autito.Titular.dni, &titular) || autito.Titular.dni == consecionariaDNI)
+            {
+            if (autito.Titular.dni != consecionariaDNI)
+            {
+                autito.Titular = titular;
+                strcpy(autito.Titular.rol, "comprador");
+            }
+            else
+            {
+                strcpy(autito.Titular.nombre, "Concesionaria");
+                autito.Titular.telefono = 0;
+                strcpy(autito.Titular.direccion, "Dirección de la Concesionaria");
+                strcpy(autito.Titular.rol, "vendedor");
+            }
+
+            printf("Ingrese el precio de adquisicion del auto: ");
+            scanf("%f", &autito.precioDeAdquisicion);
+
+            *autos = realloc(*autos, (*count + 1) * sizeof(Auto));
+            if (*autos == NULL)
+            {
+                printf("Error de asignacion de memoria\n");
+                exit(1);
+            }
+            (*autos)[*count] = autito;
+            (*count)++;
+        }
+        else
+            {
+            printf("ERROR: El titular con DNI %d no existe\n", autito.Titular.dni);
+            }
+        printf("¿Desea continuar? (s/n): ");
+        scanf("%c", &seguir);
+        fflush(stdin);
+        system("cls");
+    }
+}
+void agregarAutoArchivo(Auto* autos, int count) {
+    AutoArchivo autoArch;
+    FILE* archivo = fopen("autosArch.bin", "ab");
+    if (archivo != NULL) {
+        for (int i = 0; i < count; i++) {
+            strncpy(autoArch.patente.letras, autos[i].patente.letras, sizeof(autoArch.patente.letras));
+            autoArch.patente.numeros = autos[i].patente.numeros;
+            strncpy(autoArch.marca, autos[i].marca, sizeof(autoArch.marca));
+            strncpy(autoArch.modelo, autos[i].modelo, sizeof(autoArch.modelo));
+            autoArch.anio = autos[i].anio;
+            autoArch.kms = autos[i].kms;
+            autoArch.dniTitular = autos[i].Titular.dni;
+            autoArch.precioDeAdquisicion = autos[i].precioDeAdquisicion;
+
+            fwrite(&autoArch, sizeof(AutoArchivo), 1, archivo);
+        }
+        fclose(archivo);
+    } else {
+        printf("error no se pudo abrir el catalogo\n");
+    }
+}
+
 void agregarPersonas()
 {
     Persona p;
     char c='s';
     FILE* archivo = fopen("personas.bin","ab");
-    if(archivo!=NULL)
-    {
-        while(c=='s')
-        {
-            printf("ingrese el dni: ");
-            fflush(stdin);
-            scanf("%d",&p.dni);
-            printf("ingrese el nombre: ");
-            fflush(stdin);
-            scanf("%s",p.nombre);
-            printf("ingrese el apellido: ");
-            fflush(stdin);
-            scanf("%s",p.apellido);
+    if (archivo != NULL) {
+        while (c == 's' || c == 'S') {
+            printf("Ingrese el DNI: ");
+            scanf("%d", &p.dni);
 
-            printf("ingrese telefono: ");
-            fflush(stdin);
-            scanf("%d",&p.telefono);
+            printf("Ingrese el nombre: ");
+            scanf(" %39[^\n]", p.nombre);
 
-            printf("ingrese la direccion de la persona: ");
-            fflush(stdin);
-            scanf("%s",p.direccion);
+            printf("Ingrese el telefono: ");
+            scanf("%d", &p.telefono);
 
-            printf("ingrese el rol: ");
-            scanf("%s",p.rol);
+            printf("Ingrese la direccion de la persona: ");
+            scanf(" %29[^\n]", p.direccion);
 
-            printf("desea continuar?(s/n): ");
-            fflush(stdin);
-            scanf("%c",&c);
+            printf("Ingrese el rol (comprador o vendedor): ");
+            scanf(" %10s", p.rol);
 
-            fwrite(&p,sizeof(Persona),1,archivo);
+            fwrite(&p, sizeof(Persona), 1, archivo);
+
+            printf("Desea seguir agregando personas? (s/n): ");
+            scanf("%c", &c);
+            while (getchar() != '\n');
+
             system("cls");
         }
 
@@ -408,7 +485,6 @@ void mostrarPersonas()
             printf("-------------\n");
             printf("Dni:    \t%d\n", p.dni);
             printf("Nombre:      \t%s\n", p.nombre);
-            printf("Apellido:      \t%s\n", p.apellido);
         }
         fclose(archivo);
     } else
@@ -639,7 +715,6 @@ void infoPersona ()
                 printf("-------------\n");
                 printf("Dni:    \t%d\n", persona.dni);
                 printf("Nombre:      \t%s\n", persona.nombre);
-                printf("Apellido:      \t%s\n", persona.apellido);
                 printf("Direccion:  \t%s\n", persona.direccion);
                 printf("Telefono: \t%d\n", persona.telefono);
                 printf("Rol:     \t%s\n", persona.rol);
@@ -752,73 +827,6 @@ void infoVenta (int pos)
     }
 }
 
-void agregarAuto ()
-{
-    FILE* archi = fopen("autos", "wb");
-
-    Auto autito;
-    char seguir = 's';
-
-    if(archi != NULL)
-    {
-        while(seguir=='s')
-        {
-            printf("ingrese las letras de la patente: ");
-            fflush(stdin);
-            scanf("%s",autito.patente.letras);
-            printf("ingrese los numeros de la patente: ");
-            scanf("%d",&autito.patente.numeros);
-
-            printf("ingrese la marca del auto: ");
-            fflush(stdin);
-            scanf("%s",autito.marca);
-
-            printf("ingrese el modelo del auto: ");
-            fflush(stdin);
-            scanf("%s",autito.modelo);
-
-            printf("ingrese el anio del auto: ");
-            scanf("%d",&autito.anio);
-
-            printf("ingrese el kilometraje del auto: ");
-            scanf("%d",&autito.kms);
-
-            printf("ingrese el nombre del titular del auto: ");
-            scanf("%s",autito.Titular.nombre);
-
-            printf("ingrese el apellido del titular del auto: ");
-            fflush(stdin);
-            scanf("%s", autito.Titular.apellido);
-
-            printf("ingrese dni del titular del auto: ");
-            scanf("%d", &autito.Titular.dni);
-
-            printf("ingrese telefono del titular del auto: ");
-            scanf("%d", &autito.Titular.telefono);
-
-            printf("ingrese direccion del titular del auto: ");
-            scanf("%s", autito.Titular.direccion);
-
-            printf("ingrese el precio de adquisicion del auto: ");
-            scanf("%f",&autito.precioDeAdquisicion);
-
-            strcpy(autito.Titular.rol, "comprador");
-
-            printf("desea continuar?(s/n): ");
-            fflush(stdin);
-            scanf("%c",&seguir);
-
-            fwrite(&autito,sizeof(Auto),1,archi);
-            system("cls");
-        }
-    fclose(archi);
-    }
-    else
-    {
-        printf("ERROR: No se pudo abrir el archivo");
-    }
-}
-
 float recaudadoEnDeterminadoMes (int mes, int anio)
 {
     FILE* archi = fopen("ventas.bin", "rb");
@@ -870,7 +878,7 @@ return mayor;
 void Autos10anos()
 {
     AutoArchivo aut;
-    FILE*archi=fopen("autosArch","rb");
+    FILE*archi=fopen("autosArch.bin","rb");
     int conta=0;
     AutoArchivo autos[100];
     if(archi!=NULL)
@@ -906,9 +914,5 @@ void Autos10anos()
                     printf("DniTitular: %d\n", aut.dniTitular);
                     printf("PrecioAdq:  %.2f\n", aut.precioDeAdquisicion);
             }
-
-
-
+	}
 }
-}
-
