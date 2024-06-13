@@ -987,14 +987,14 @@ void Autos10anos()
     AutoArchivo autos[100];
     if(archi!=NULL)
     {
-        while(fread(&aut,sizeof(AutoArchivo),1,archi))
+        while(fread(&aut,sizeof(AutoArchivo),1,archi)>0)
               {
                   if(CURRENT_YEAR - aut.anio<10)
                 {
                     conta++;
                 }
               }
-                fclose(archi);
+
                 for(int i=0;i<conta;i++)
                 {
                     for (int j=i+1;j<conta;j++)
@@ -1018,6 +1018,7 @@ void Autos10anos()
                     printf("DniTitular: %d\n", aut.dniTitular);
                     printf("PrecioAdq:  %.2f\n", aut.precioDeAdquisicion);
             }
+            fclose(archi);
     }
 
 }
