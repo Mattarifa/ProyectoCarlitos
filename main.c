@@ -148,21 +148,21 @@ void menu()
     int pos;
     while(c=='s')
     {
-        printf("ingrese que desea hacer:\n");
+        printf("\n\tingrese que desea hacer:\n");
         printf("____________________________\n");
-        printf("Agregar un auto: \t(1) |\n");
-        printf("Ver lista de autos: \t(2) |\n");
-        printf("Modificar un auto: \t(3) |\n");
-        printf("Ver info de un auto: \t(4) |\n");
-        printf("Agregar una persona: \t(5) |\n");
-        printf("Modificar una persona:\t(6) |\n");
-        printf("ver lista de personas:\t(7) |\n");
-        printf("ver info de persona:  \t(8) |\n");
-        printf("ver autos en venta:  \t(9) |\n"); //con dni hardcodeado de consecionaria
-        printf("Ver ventas:\t\t(10)|\n");
-        printf("Agregar una venta:\t(11)|\n");
-        printf("Recaudado en un mes\t(12)|\n");
-        printf("Ver antiguedad de auto:\t(13)|\n");
+        printf("\n\tAgregar un auto: \t(1) |\n");
+        printf("\n\tVer lista de autos: \t(2) |\n");
+        printf("\n\tModificar un auto: \t(3) |\n");
+        printf("\n\tVer info de un auto: \t(4) |\n");
+        printf("\n\tAgregar una persona: \t(5) |\n");
+        printf("\n\tModificar una persona:\t(6) |\n");
+        printf("\n\tver lista de personas:\t(7) |\n");
+        printf("\n\tver info de persona:  \t(8) |\n");
+        printf("\n\tver autos en venta:  \t(9) |\n"); //con dni hardcodeado de consecionaria
+        printf("\n\tVer ventas:\t\t(10)|\n");
+        printf("\n\tAgregar una venta:\t(11)|\n");
+        printf("\n\tRecaudado en un mes\t(12)|\n");
+        printf("\n\tVer antiguedad de auto:\t(13)|\n");
         scanf("%d",&a);
         switch(a)
         {
