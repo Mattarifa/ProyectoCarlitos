@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <conio.h>
+#include <time.h>
 
 #define CURRENT_YEAR 2024
 
@@ -29,7 +30,7 @@ typedef struct {        //persona
 	int dni;
 	char nombre[40];
 	int telefono;
-	char direccion[30];
+	char direccion[50];
 	char rol[11]; //comprador o vendedor
 
 } Persona;
@@ -102,7 +103,7 @@ void iniciarPrograma(){
     int intento=0;
     int ingresa=0;
     int opcion;
-    printf("\n\t\t-------------------------------------------------------\n");
+   printf("\n\t\t-------------------------------------------------------\n");
     printf("\n\t\tSi desea registrarse ingrese 1, para logearse ingrese 2:\n ");
     printf("\n\t\t-------------------------------------------------------\n");
     scanf("%d",&opcion);
@@ -163,23 +164,22 @@ void menu()
 
     while(c=='s')
     {
-        printf("\n\tingrese que desea hacer:\n");
-        printf("\n\t____________________________\n");
-        printf("\n\tAgregar un auto: \t(1) |\n");
-        printf("\n\tVer lista de autos: \t(2) |\n");
-        printf("\n\tModificar un auto: \t(3) |\n");
-        printf("\n\tVer info de un auto: \t(4) |\n");
-        printf("\n\tAgregar una persona: \t(5) |\n");
-        printf("\n\tModificar una persona:\t(6) |\n");
-        printf("\n\tver lista de personas:\t(7) |\n");
-        printf("\n\tver info de persona:  \t(8) |\n");
-        printf("\n\tver autos en venta:  \t(9) |\n"); //con dni hardcodeado de consecionaria
-        printf("\n\tVer ventas:\t\t(10)|\n");
-        printf("\n\tver info de una venta:\t(11)|\n");
-        printf("\n\tAgregar una venta:\t(12)|\n");
-        printf("\n\tRecaudado en un mes\t(13)|\n");
-        printf("\n\tVer antiguedad de auto:\t(14)|\n");
-	printf("\n\tSi desea salir:\t(15)|\n");
+        printf("ingrese que desea hacer:\n");
+        printf("____________________________\n");
+        printf("Agregar un auto: \t(1) |\n");
+        printf("Ver lista de autos: \t(2) |\n");
+        printf("Modificar un auto: \t(3) |\n");
+        printf("Ver info de un auto: \t(4) |\n");
+        printf("Agregar una persona: \t(5) |\n");
+        printf("Modificar una persona:\t(6) |\n");
+        printf("ver lista de personas:\t(7) |\n");
+        printf("ver info de persona:  \t(8) |\n");
+        printf("ver autos en venta:  \t(9) |\n"); //con dni hardcodeado de consecionaria
+        printf("Ver ventas:\t\t(10)|\n");
+        printf("ver info de una venta:\t(11)|\n");
+        printf("Agregar una venta:\t(12)|\n");
+        printf("Recaudado en un mes\t(13)|\n");
+        printf("Ver antiguedad de auto:\t(14)|\n");
         scanf("%d",&a);
         switch(a)
         {
@@ -289,18 +289,14 @@ void menu()
             case 14:
                 Autos10anos();
             break;
-	    case 15:
-		printf("\n\tHasta pronto");
-		return 1;
-		
             default:
-		    printf("\n\tIngrese una opcion valida o presione n para salir);
 
             break;
         }
         printf("\nDesea continuar en el menu?(s/n):");
         fflush(stdin);
         scanf("%c",&c);
+        system("cls");
     }
 
 }
@@ -523,7 +519,7 @@ void agregarPersonas()
 {
     Persona p;
     char c='s';
-    FILE* archivo = fopen("personas.bin","ab");
+    FILE* archivo = fopen("personas.bin","wb");
     if (archivo != NULL) {
         while (c == 's' || c == 'S') {
             printf("Ingrese el DNI: ");
@@ -536,11 +532,10 @@ void agregarPersonas()
             scanf("%d", &p.telefono);
 
             printf("Ingrese la direccion de la persona(con numeros): ");
-            scanf(" %29[^\n]", p.direccion);
+            scanf(" %49[^\n]", p.direccion);
 
             printf("Ingrese el rol (comprador o vendedor): ");
             scanf(" %10s", p.rol);
-
             fwrite(&p, sizeof(Persona), 1, archivo);
 
             printf("Desea seguir agregando personas? (s/n): ");
@@ -833,22 +828,16 @@ void infoPersona (int dni)
 }
 
 
-void infoAuto ()
+void infoAuto (char letras[],int num)
 {
     FILE* archi = fopen("autosArch.bin", "rb");
 
     AutoArchivo autoArch;
-    char letras[5];
-    int num=0;
+
     int encontro=0;
 
     if(archi != NULL)
     {
-        printf("Ingrese las letras de la patente: ");
-        fflush(stdin);
-        scanf("%s", letras);
-        printf("Ingrese los numeros de la patente: ");
-        scanf("%d", &num);
 
         printf("p:%s-\n",letras);
 
@@ -898,7 +887,6 @@ void verVentas ()
             printf("\nFecha:   %d / %d / %d", ventas.fecha.dia, ventas.fecha.mes, ventas.fecha.anio);
             printf("\nPatente: %s-%d\n", ventas.autoAVender.letras, ventas.autoAVender.numeros);
         }
-
 
     fclose(archi);
     }else
@@ -996,13 +984,18 @@ void Autos10anos() {
         AutoArchivo autoTemp;
         while (fread(&autoTemp, sizeof(AutoArchivo), 1, archi) > 0) {
             if (CURRENT_YEAR - autoTemp.anio < 10) {
-                autos[conta] = autoTemp;
-                conta++;
+                if (conta < 100) {
+                    autos[conta] = autoTemp;
+                    conta++;
+                } else {
+                    printf("Error: Se alcanzó el límite de almacenamiento de autos.\n");
+                    break;
+                }
             }
         }
         fclose(archi);
 
-        // Ordenar los autos por año en orden descendente
+
         for (int i = 0; i < conta - 1; i++) {
             for (int j = i + 1; j < conta; j++) {
                 if (autos[i].anio < autos[j].anio) {
@@ -1013,7 +1006,7 @@ void Autos10anos() {
             }
         }
 
-        // Mostrar los autos
+
         for (int k = 0; k < conta; k++) {
             printf("Patente:    %s-%d\n", autos[k].patente.letras, autos[k].patente.numeros);
             printf("Marca:      %s\n", autos[k].marca);
