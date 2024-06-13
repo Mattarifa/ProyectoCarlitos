@@ -111,6 +111,10 @@ void iniciarPrograma(){
         registrarse();
         printf("\n\tSi desea logearse ingrese 2, si desea salir ingrese 3: \n");
         scanf("%d",&opcion);
+        fflush(stdin);
+        if (opcion == 2){
+            login(usuario,clave);
+        }
         break;
     case 2:
     while(!ingresa && intento<3){
