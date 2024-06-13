@@ -89,8 +89,8 @@ int main()
     int intento =0;
     int ingresa = 0;
 
-    //login(usuario, clave, &intento, &ingresa);
-    //registrarse();
+    registrarse();
+    login(usuario, clave, &intento, &ingresa);
     menu();
 
 
@@ -101,6 +101,7 @@ void menu()
 {
     char c='s';
     int a;
+    int pos;
     while(c=='s')
     {
         printf("ingrese que desea hacer:\n");
@@ -154,10 +155,10 @@ void menu()
                 infoPersona();
             break;
             case 9:
-                if() /*dni titular consecionaria*/
+                /*if() /*dni titular consecionaria
                 {
                     //hacer funcion de filtro
-                }
+                }*/
             break;
             case 10:
                 verVentas();
@@ -165,7 +166,7 @@ void menu()
             case 11:
                 agregarVentas();
             break;
-            case 12:
+            /*case 12:
                 int mes,anio;
 
                 printf("ingrese mes:");
@@ -173,7 +174,7 @@ void menu()
                 printf("ingrese anio:");
                 scanf("%d",&anio);
                 recaudadoEnDeterminadoMes(mes,anio);
-            break;
+            break;*/
             case 13:
                 Autos10anos();
             break;
