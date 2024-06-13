@@ -420,16 +420,16 @@ void agregarPersonas()
     FILE* archivo = fopen("personas.bin","ab");
     if (archivo != NULL) {
         while (c == 's' || c == 'S') {
-            printf("Ingrese el DNI: ");
+           printf("Ingrese el DNI: ");
             scanf("%d", &p.dni);
 
-            printf("Ingrese el nombre: ");
+            printf("Ingrese el nombre y apellido: ");
             scanf(" %39[^\n]", p.nombre);
 
             printf("Ingrese el telefono: ");
             scanf("%d", &p.telefono);
 
-            printf("Ingrese la direccion de la persona: ");
+            printf("Ingrese la direccion de la persona(con numeros): ");
             scanf(" %29[^\n]", p.direccion);
 
             printf("Ingrese el rol (comprador o vendedor): ");
