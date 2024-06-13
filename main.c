@@ -979,46 +979,43 @@ float mayorGanancia ()
 return mayor;
 }
 
-void Autos10anos()
-{
-    AutoArchivo aut;
-    FILE*archi=fopen("autosArch.bin","rb");
-    int conta=0;
+void Autos10anos() {
     AutoArchivo autos[100];
-    if(archi!=NULL)
-    {
-        while(fread(&aut,sizeof(AutoArchivo),1,archi)>0)
-              {
-                  if(CURRENT_YEAR - aut.anio<10)
-                {
-                    conta++;
-                }
-              }
+    FILE *archi = fopen("autosArch.bin", "rb");
+    int conta = 0;
 
-                for(int i=0;i<conta;i++)
-                {
-                    for (int j=i+1;j<conta;j++)
-                    {
-                        if(autos[i].anio<autos[j].anio)
-                        {
-                            AutoArchivo temp= autos[i];
-                            autos[i]=autos[j];
-                            autos[j]=temp;
-                        }
-                    }
-                }
-
-            for(int k=0;k<conta;k++)
-            {
-                    printf("Patente:    %s-%d\n", aut.patente.letras, aut.patente.numeros);
-                    printf("Marca:      %s\n", aut.marca);
-                    printf("Modelo:     %s\n", aut.modelo);
-                    printf("Anio:       %d\n", aut.anio);
-                    printf("Kms:        %d\n", aut.kms);
-                    printf("DniTitular: %d\n", aut.dniTitular);
-                    printf("PrecioAdq:  %.2f\n", aut.precioDeAdquisicion);
+    if (archi != NULL) {
+        AutoArchivo autoTemp;
+        while (fread(&autoTemp, sizeof(AutoArchivo), 1, archi) > 0) {
+            if (CURRENT_YEAR - autoTemp.anio < 10) {
+                autos[conta] = autoTemp;
+                conta++;
             }
-            fclose(archi);
-    }
+        }
+        fclose(archi);
 
+        // Ordenar los autos por año en orden descendente
+        for (int i = 0; i < conta - 1; i++) {
+            for (int j = i + 1; j < conta; j++) {
+                if (autos[i].anio < autos[j].anio) {
+                    AutoArchivo temp = autos[i];
+                    autos[i] = autos[j];
+                    autos[j] = temp;
+                }
+            }
+        }
+
+        // Mostrar los autos
+        for (int k = 0; k < conta; k++) {
+            printf("Patente:    %s-%d\n", autos[k].patente.letras, autos[k].patente.numeros);
+            printf("Marca:      %s\n", autos[k].marca);
+            printf("Modelo:     %s\n", autos[k].modelo);
+            printf("Anio:       %d\n", autos[k].anio);
+            printf("Kms:        %d\n", autos[k].kms);
+            printf("DniTitular: %d\n", autos[k].dniTitular);
+            printf("PrecioAdq:  %.2f\n\n", autos[k].precioDeAdquisicion);
+        }
+    } else {
+        printf("Error: No se pudo abrir el archivo autosArch.bin.\n");
+    }
 }
