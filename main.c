@@ -233,7 +233,7 @@ void menu()
 }
 void registrarse()
 {
-    FILE *archivos= fopen("personas.bin","ab");
+    FILE *archivos= fopen("cuentas.bin","ab");
     if(archivos==NULL)
     {
         printf("error");
@@ -266,7 +266,7 @@ void registrarse()
 int login(char *usuario, char *clave)
 {
     int flag=0;
-    FILE*archi=fopen("personas.bin","rb");
+    FILE*archi=fopen("cuentas.bin","rb");
     char archivoUsuario[LONGITUD+1];
     char archivoClave[LONGITUD+1];
     if (archi == NULL)
