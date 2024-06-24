@@ -28,7 +28,7 @@ typedef struct {        //guardar autos en memoria
 typedef struct {        //persona
 	int dni;
 	char nombre[40];
-	int telefono;
+	long long int telefono;
 	char direccion[50];
 	char rol[11]; //comprador o vendedor
 
@@ -71,7 +71,7 @@ void mostrarAutoArchivo();
 void mostrarPersonas();
 void agregarVentas();
 void mostrarVentas();
-void modificarAuto(int);
+void modificarAuto(Auto**,int*);
 void modificarPersona(int);
 void infoPersona();
 void infoAuto();
@@ -95,8 +95,8 @@ void iniciarPrograma() {
     char clave[LONGITUD + 1];
     int intento = 0;
     int ingresa = 0;
-    char entrada[50]; 
-    int opcion1, opcion2; 
+    char entrada[50];
+    int opcion1, opcion2;
 
     while (1) {
         printf("\n\t\t-------------------------------------------------------\n");
@@ -114,7 +114,7 @@ void iniciarPrograma() {
             continue; // Volver al inicio del bucle
         }
 
-        
+
         switch (opcion1) {
             case 1:
                 registrarse();
@@ -140,7 +140,7 @@ void iniciarPrograma() {
                 break;
         }
 
-       
+
         if (opcion2 == 2 && opcion1 == 1) {
             while (!ingresa && intento < 3) {
                 ingresa = login(usuario, clave);
@@ -163,7 +163,7 @@ void iniciarPrograma() {
 void menu(){
 
     char c='s';
-    int a,pos;
+    int a,dni;
     Auto* autos;
     autos = (Auto*) malloc (1 * sizeof(Auto));
     int count = 0;
@@ -219,14 +219,7 @@ void menu(){
             break;
             case 3:
                 mostrarAutoArchivo();
-                printf("ingrese la pos del auto a modificar:");     //falta chequear
-                scanf("%d", &posAuto);
-                while(posAuto < 0)
-                {
-                    printf("Error: ingrese un numero mayor a 0: ");
-                    scanf("%d", &posAuto);
-                }
-                modificarAuto(posAuto);
+                modificarAuto(&autos,&count);
             break;
             case 4:                                                   //listo
                 mostrarAutoArchivo();
@@ -257,15 +250,18 @@ void menu(){
                 agregarPersonas();
                 mostrarPersonas();
             break;
-            case 6:
+            case 6:                                     // listo
                 mostrarPersonas();
-                scanf("%d", &posPersona);
-                while(posPersona < 0)
+                printf("Ingrese el dni de la persona que desea modificar:");
+                scanf("%lld",&tempDNI);
+                while(tempDNI < 1000000 || tempDNI > 999999999 || tempDNI > INT_MAX || tempDNI < INT_MIN)
                 {
-                    printf("Error: ingrese un numero mayor a 0: ");
-                    scanf("%d", &posPersona);
+                    printf("Error: dni invalido o fuera de rango\n");
+                    printf("Ingrese un dni valido:");
+                    scanf("%lld", &tempDNI);
                 }
-                modificarPersona(posPersona);
+                dni = (int)tempDNI;
+                modificarPersona(dni);
             break;
             case 7:
                 mostrarPersonas();                       //listo
@@ -275,6 +271,7 @@ void menu(){
                 mostrarPersonas();
                 printf("Ingrese dni de la persona que quiera ver: ");
                 scanf("%lld", &tempDNI);
+                fflush(stdin);
                 while(tempDNI < 1000000 || tempDNI > 999999999 || tempDNI > INT_MAX || tempDNI < INT_MIN)
                 {
                     printf("ERROR: Dni invalido o fuera de rango\n");
@@ -351,7 +348,7 @@ void menu(){
 int usuario_existe(const char* usuario) {
     FILE *archivo = fopen("cuentas.bin", "rb");
     if (archivo == NULL) {
-        return 0; 
+        return 0;
     }
 
     char usuario_existente[LONGITUD + 1];
@@ -361,14 +358,13 @@ int usuario_existe(const char* usuario) {
         fread(clave, sizeof(char), LONGITUD + 1, archivo); // leer la clave correspondiente
         if (strcmp(usuario_existente, usuario) == 0) {
             fclose(archivo);
-            return 1; 
+            return 1;
         }
     }
 
     fclose(archivo);
     return 0;
 }
-
 void registrarse() {
     char usuario[LONGITUD + 1];
     char clave[LONGITUD + 1];
@@ -382,7 +378,7 @@ void registrarse() {
 
         if (strlen(usuario) == LONGITUD) {
             printf("\n\tNombre de usuario demasiado largo. Intente de nuevo.\n");
-            while (getchar() != '\n'); 
+            while (getchar() != '\n');
             continue;
         }
 
@@ -414,11 +410,10 @@ void registrarse() {
         printf("\n\t\t---------------------------------");
 
         fclose(archivo);
-        break; 
+        break;
     }
 }
-int login(char *usuario, char *clave)
-{
+int login(char *usuario, char *clave) {
     int flag = 0;
     FILE* archi = fopen("cuentas.bin", "rb");
     char archivoUsuario[LONGITUD + 1];
@@ -678,18 +673,16 @@ void agregarAutoArchivo(Auto* autos, int count) {
     AutoArchivo autoArch;
     FILE* archivo = fopen("autosArch.bin", "ab");
     if (archivo != NULL) {
-        for (int i = 0; i < count; i++) {
-            strncpy(autoArch.patente.letras, autos[i].patente.letras, sizeof(autoArch.patente.letras));
-            autoArch.patente.numeros = autos[i].patente.numeros;
-            strncpy(autoArch.marca, autos[i].marca, sizeof(autoArch.marca));
-            strncpy(autoArch.modelo, autos[i].modelo, sizeof(autoArch.modelo));
-            autoArch.anio = autos[i].anio;
-            autoArch.kms = autos[i].kms;
-            autoArch.dniTitular = autos[i].Titular.dni;
-            autoArch.precioDeAdquisicion = autos[i].precioDeAdquisicion;
+        strncpy(autoArch.patente.letras, autos[count - 1].patente.letras, sizeof(autoArch.patente.letras));
+        autoArch.patente.numeros = autos[count - 1].patente.numeros;
+        strncpy(autoArch.marca, autos[count - 1].marca, sizeof(autoArch.marca));
+        strncpy(autoArch.modelo, autos[count - 1].modelo, sizeof(autoArch.modelo));
+        autoArch.anio = autos[count - 1].anio;
+        autoArch.kms = autos[count - 1].kms;
+        autoArch.dniTitular = autos[count - 1].Titular.dni;
+        autoArch.precioDeAdquisicion = autos[count - 1].precioDeAdquisicion;
 
-            fwrite(&autoArch, sizeof(AutoArchivo), 1, archivo);
-        }
+        fwrite(&autoArch, sizeof(AutoArchivo), 1, archivo);
         fclose(archivo);
     } else {
         printf("error no se pudo abrir el catalogo\n");
@@ -704,7 +697,9 @@ void agregarPersonas(){
         while (c == 's' || c == 'S') {
             printf("Ingrese el DNI: ");
             scanf("%lld", &tempDNI);
-             while(tempDNI < 1000000 || tempDNI > 999999999)
+            while (getchar() != '\n');
+
+             while(tempDNI < 1000000 || tempDNI > 999999999 || tempDNI>INT_MAX || tempDNI<INT_MIN)
             {
                 printf("\nERROR Dni invalido o fuera de rango \n");
                 printf("\nIngrese un dni valido: ");
@@ -721,16 +716,17 @@ void agregarPersonas(){
             while(strlen(p.nombre)>39)
                 {
                     printf("Error: Ingrese un nombre no tan largo: ");
-                    scanf(" %39[^\n]", &p.nombre);
+                    scanf(" %39[^\n]", p.nombre);
                     fflush(stdin);
                 }
 
             printf("Ingrese el telefono: ");
-            scanf("%d", &p.telefono);
-            while(p.telefono < 1000000 || p.telefono > 9999999999 || p.telefono > INT_MAX || p.telefono < INT_MIN)
+            scanf("%lld", &p.telefono);
+            while(p.telefono < 1000000 || p.telefono > 9999999999)
             {
                 printf("Error: Ingrese un telefono valido: ");
-                scanf("%d", &p.telefono);
+                scanf("%lld", &p.telefono);
+                fflush(stdin);
             }
 
             printf("Ingrese la direccion de la persona(con numeros): ");
@@ -1021,136 +1017,203 @@ void mostrarVentas(){
         printf("error");
     }
 }
-void modificarAuto(int pos){
+void modificarAuto(Auto** autos,int* count){
+  AutoArchivo autoArch;
+    FILE *archivo = fopen("autosArch.bin", "r+b");
+    Patente patente;
+    char opcion;
+    int encontrado = 0;
 
-   FILE *archivo = fopen("autosArch.bin", "r+b");
-   AutoArchivo autoArch;
-    char i;
-    char seguir = 's';
-
-    if(archivo!=NULL)
-    {
-        fseek(archivo, (pos-1)*sizeof(AutoArchivo), SEEK_SET);
-        fread(&autoArch, sizeof(AutoArchivo), 1, archivo);
-        fseek(archivo, (pos-1)*sizeof(AutoArchivo), SEEK_SET);
-        while (seguir == 's')
-        {
-            printf("Que dato desea modificar? (p(patente)/m(marca)/x(modelo)/a(anio)/k(kms)/d(dni)/v(precio)): ");
+    if (archivo != NULL) {
+        printf("Ingrese las letras de la patente: ");
+        scanf("%s", patente.letras);
+        fflush(stdin);
+        while (strlen(patente.letras) != 3) {
+            printf("Error: Ingrese letras validas a la patente: ");
+            scanf("%s", patente.letras);
             fflush(stdin);
-            scanf("%c", &i);
+        }
 
-            switch(i)
-            {
-                case 'p':
-                        printf("Ingrese la patente: ");
-                        fflush(stdin);
-                        scanf("%s %d", autoArch.patente.letras, &autoArch.patente.numeros);
+        printf("Ingrese los numeros de la patente: ");
+        scanf("%d", &patente.numeros);
+        fflush(stdin);
+        while (patente.numeros < 100 || patente.numeros > 999) {
+            printf("Error: ingrese numeros validos para la patente: ");
+            scanf("%d", &patente.numeros);
+            fflush(stdin);
+        }
+
+        while (fread(&autoArch, sizeof(AutoArchivo), 1, archivo) > 0) {
+            if (strcmp(autoArch.patente.letras, patente.letras) == 0 && autoArch.patente.numeros == patente.numeros) {
+                encontrado = 1;
                 break;
-                case 'm':
-                        printf("Ingrese una nueva marca: "),
-                        fflush(stdin);
-                        scanf("%s", autoArch.marca);
-                break;
-                case 'x':
-                        printf("Ingrese un nuevo modelo: ");
-                        fflush(stdin);
-                        scanf("%s", autoArch.modelo);
-                break;
-                case 'a':
-                        printf("Ingrese nuevo anio: ");
-                        scanf("%d", &autoArch.anio);
-                break;
-                case 'k':
-                        printf("Ingrese los kms: ");
-                        scanf("%d", &autoArch.kms);
-                break;
-                case 'd':
-                        printf("Ingrese el dni: ");
-                        scanf("%d", &autoArch.dniTitular);
-                break;
-                case 'v':
-                        printf("Ingrese el nuevo precio: ");
-                        scanf("%f", &autoArch.precioDeAdquisicion);
-                break;
-                default:
-                        printf("Error \n");
             }
-            printf("Desea continuar? (s/n): ");
-            fflush(stdin);
-            scanf("%c", &seguir);
         }
-        fseek(archivo, (pos-1)*sizeof(AutoArchivo), SEEK_SET);
-        fwrite(&autoArch, sizeof(AutoArchivo),1,archivo);
+
+        if (encontrado) {
+            fseek(archivo, -sizeof(AutoArchivo), SEEK_CUR);
+
+            do {
+                printf("Que dato desea modificar? (p(patente)/m(marca)/x(modelo)/a(anio)/k(kms)/d(dni)/v(precio)): ");
+                fflush(stdin);
+                scanf("%c", &opcion);
+
+                switch (opcion) {
+                    case 'p':
+                        printf("Ingrese las nuevas letras de la patente: ");
+                        scanf("%s", autoArch.patente.letras);
+                        fflush(stdin);
+                        while (strlen(autoArch.patente.letras) != 3) {
+                            printf("Error: Ingrese letras validas a la patente: ");
+                            scanf("%s", autoArch.patente.letras);
+                            fflush(stdin);
+                        }
+
+                        printf("Ingrese los nuevos numeros de la patente: ");
+                        scanf("%d", &autoArch.patente.numeros);
+                        fflush(stdin);
+                        while (autoArch.patente.numeros < 100 || autoArch.patente.numeros > 999) {
+                            printf("Error: ingrese numeros validos para la patente: ");
+                            scanf("%d", &autoArch.patente.numeros);
+                            fflush(stdin);
+                        }
+                        break;
+                    case 'm':
+                        printf("Ingrese la nueva marca del auto: ");
+                        scanf("%s", autoArch.marca);
+                        fflush(stdin);
+                        break;
+                    case 'x':
+                        printf("Ingrese el nuevo modelo del auto: ");
+                        scanf("%s", autoArch.modelo);
+                        fflush(stdin);
+                        break;
+                    case 'a':
+                        printf("Ingrese el nuevo anio del auto: ");
+                        scanf("%d", &autoArch.anio);
+                        fflush(stdin);
+                        while (autoArch.anio < 1900 || autoArch.anio > 2024) {
+                            printf("Error: Ingrese un anio valido para el auto: ");
+                            scanf("%d", &autoArch.anio);
+                            fflush(stdin);
+                        }
+                        break;
+                    case 'k':
+                        printf("Ingrese el nuevo kilometraje del auto: ");
+                        scanf("%d", &autoArch.kms);
+                        fflush(stdin);
+                        break;
+                    case 'd':
+                        mostrarPersonas();
+                        printf("Ingrese DNI del nuevo titular del auto: ");
+                        scanf("%d", &autoArch.dniTitular);
+                        fflush(stdin);
+                        break;
+                    case 'v':
+                        printf("Ingrese el nuevo precio de adquisicion del auto: ");
+                        scanf("%f", &autoArch.precioDeAdquisicion);
+                        fflush(stdin);
+                        break;
+                    default:
+                        printf("Error: Debe ingresar una de las opciones\n");
+                }
+
+                printf("Desea seguir modificando? (s/n): ");
+                fflush(stdin);
+                scanf("%c", &opcion);
+            } while (opcion == 's' || opcion == 'S');
+
+            fwrite(&autoArch, sizeof(AutoArchivo), 1, archivo);
+        } else {
+            printf("\nERROR: No se encontro el auto con esa patente\n");
+        }
+
         fclose(archivo);
+    } else {
+        printf("Error al abrir el archivo\n");
     }
-        else
-        {
-            printf("error a  ");
-        }
 }
-void modificarPersona(int pos){
+void modificarPersona(int dni){
 
    FILE *archivo = fopen("personas.bin", "r+b");
    Persona persona;
     char i;
     char seguir = 's';
+    int encontrado=0;
 
     if(archivo!=NULL)
     {
-        fseek(archivo, (pos-1)*sizeof(Persona), SEEK_SET);
-        fread(&persona, sizeof(Persona), 1, archivo);
-
-        while (seguir == 's')
+        while( fread(&persona, sizeof(Persona), 1, archivo)>0)
         {
-            printf("Que dato desea modificar? n(nombre)/d(direccion)/x(dni)/t(telefono)/r(rol): ");
-            fflush(stdin);
-            scanf("%c", &i);
-
-            switch(i)
+            if(persona.dni==dni)
             {
-                case 'n':
-                        printf("Ingrese nuevo nombre y apellido: ");
-                        scanf(" %39[^\n]", persona.nombre);
-
+                encontrado=1;
+                fseek(archivo, -sizeof(Persona), SEEK_CUR);
                 break;
-                case 'd':
-                        printf("Ingrese una nueva direccion: "),
-                        scanf(" %29[^\n]", persona.direccion);
-                break;
-                case 'x':
-                        printf("Ingrese un nuevo dni: ");
-                        fflush(stdin);
-                        scanf("%d", &persona.dni);
-                break;
-                case 't':
-                        printf("Ingrese nuevo telefono: ");
-                        scanf("%d", &persona.telefono);
-                break;
-                case 'r':
-                        printf("Ingrese un nuevo rol(c/v): ");
-                        scanf(" %10s", persona.rol);
-                        while(strcmp(persona.rol,"comprador")!=0 && strcmp(persona.rol,"vendedor")!=0)
-                        {
-                        printf("Ingrese un caracter valido(c/v): ");
-                        fflush(stdin);
-                        scanf("%s", persona.rol);
-                        }
-                break;
-                default:
-                        printf("Error \n");
             }
-            printf("Desea continuar? (s/n): ");
-            fflush(stdin);
-            scanf("%c", &seguir);
         }
-        fseek(archivo, (pos-1)*sizeof(Persona), SEEK_SET);
-        fwrite(&persona, sizeof(Persona),1,archivo);
-        fclose(archivo);
-    }
+        if(encontrado)
+        {
+            while (seguir == 's' || seguir=='S')
+            {
+                printf("Que dato desea modificar? n(nombre)/d(direccion)/x(dni)/t(telefono)/r(rol): ");
+                scanf(" %c", &i);
+                fflush(stdin);
+
+                switch(i)
+                {
+                    case 'n':
+                            printf("Ingrese nuevo nombre y apellido: ");
+                            scanf(" %39[^\n]", persona.nombre);
+                            fflush(stdin);
+                    break;
+                    case 'd':
+                            printf("Ingrese una nueva direccion: "),
+                            scanf(" %29[^\n]", persona.direccion);
+                            fflush(stdin);
+                    break;
+                    case 'x':
+                            printf("Ingrese un nuevo dni: ");
+                            scanf("%d", &persona.dni);
+                            fflush(stdin);
+                    break;
+                    case 't':
+                            printf("Ingrese nuevo telefono: ");
+                            scanf("%lld", &persona.telefono);
+                            fflush(stdin);
+                    break;
+                    case 'r':
+                            printf("Ingrese un nuevo rol(c/v): ");
+                            scanf(" %10s", persona.rol);
+                            fflush(stdin);
+
+                            while(strcmp(persona.rol,"comprador")!=0 && strcmp(persona.rol,"vendedor")!=0)
+                            {
+                            printf("Ingrese un caracter valido(c/v): ");
+                            scanf("%s", persona.rol);
+                            fflush(stdin);
+                            }
+                    break;
+                    default:
+                            printf("Error \n");
+                }
+                printf("Quiere modificar otro dato? (s/n): ");
+                scanf("%c", &seguir);
+                fflush(stdin);
+            }
+                fseek(archivo, -sizeof(Persona), SEEK_CUR);
+                fwrite(&persona, sizeof(Persona),1,archivo);
+        }
         else
         {
-            printf("error a  ");
+            printf("\nERROR: No se encontro la persona con DNI %d\n", dni);
         }
+        fclose(archivo);
+    }
+    else
+    {
+        printf("ERROR: No se pudo abrir el archivo");
+    }
 }
 void infoPersona (int dni){
     FILE* archi = fopen("personas.bin", "rb");
@@ -1168,7 +1231,7 @@ void infoPersona (int dni){
                 printf("Dni:    \t%d\n", persona.dni);
                 printf("Nombre:      \t%s\n", persona.nombre);
                 printf("Direccion:  \t%s\n", persona.direccion);
-                printf("Telefono: \t%d\n", persona.telefono);
+                printf("Telefono: \t%lld\n", persona.telefono);
                 printf("Rol:     \t%s\n", persona.rol);
                 encontro=1;
             }
