@@ -65,7 +65,7 @@ void iniciarPrograma();
 void menu();
 void registrarse();
 int login(char*,char*);
-void agregarAutoArchivo();
+void agregarAutoArchivo(Auto*,int);
 void agregarPersonas();
 void mostrarAutoArchivo();
 void mostrarPersonas();
@@ -85,6 +85,7 @@ int buscarAutoPorPatente(AutoArchivo*,char[],char[],int*);
 int buscarPersonaPorDNI(int,Persona*);
 void cambiar_titular(int,int);
 float precioAdquisicion(int);
+int usuario_existe(const char*);
 
 int main(){
     iniciarPrograma();
@@ -206,7 +207,7 @@ void menu(){
         printf("\tMayor ganancia \t\t(15)|\n");
         printf("\tSi desea salir:\t\t(16)|\n");
         printf("\t____________________________|\n\n");
-        printf("\tOpcion: ");
+        printf("\tOpcion:");
         scanf("%d",&a);
         switch(a)
         {
@@ -249,7 +250,7 @@ void menu(){
                 }
 
                 printf("Ingrese los numeros de la petente del auto que quiere ver: ");
-                scanf("%s", &patenteNumeros);
+                scanf("%d", &patenteNumeros);
                 fflush(stdin);
 
                 while(strlen(patenteNumeros)!=3)
@@ -1114,7 +1115,7 @@ void modificarAuto(){
                         printf("Ingrese el nuevo modelo del auto: ");
                         scanf("%s", autoArch.modelo);
                         fflush(stdin);
-                        while(strlen(autoArch.modelo)<4 || strlen(autoArch.modelo) >15)
+                        while(strlen(autoArch.modelo)<4 || strlen(autoArch.modelo) >10 )
                         {
                             printf("Error: Ingrese un modelo valido: ");
                             scanf("%s", &autoArch.modelo);
@@ -1366,9 +1367,9 @@ void infoVenta (){
         printf("Dia:");
         scanf("%d",&dia);
         fflush(stdin);
-        while(dia < 1 || dia > 31)
+        while( dia < 1 || dia > 31)
             {
-                printf("\nError: ingrese un dia valido");
+                printf("Error: ingrese un dia valido");
                 printf("Dia:");
                 scanf("%d",&dia);
                 fflush(stdin);
@@ -1378,7 +1379,7 @@ void infoVenta (){
         fflush(stdin);
         while(mes > 12 || mes < 1)
             {
-                printf("\nError: ingrese un mes valido");
+                printf("Error: ingrese un mes valido");
                 printf("Mes:");
                 scanf("%d",&mes);
                 fflush(stdin);
@@ -1388,7 +1389,7 @@ void infoVenta (){
         fflush(stdin);
         while(anio > 2024 || anio<1990)
             {
-                printf("\nError: ingrese un anio no mayor a 2024 ni menor a 1990");
+                printf("Error: ingrese un anio no mayor a 2024 ni menor a 1990");
                 printf("Anio:");
                 scanf("%d",&anio);
                 fflush(stdin);
@@ -1532,7 +1533,6 @@ void Autos10anos() {
             }
         }
 
-        printf("\nAutos menores a 10 anios: \n");
 
         for (int k = 0; k < conta; k++) {
             printf("Patente:    %s-%d\n", autos[k].patente.letras, autos[k].patente.numeros);
