@@ -121,7 +121,7 @@ void iniciarPrograma() {
                             intento++;
                         } else {
                             menu();
-                            return;  // Sale del programa después de entrar al menú
+                            return;  
                         }
                     }
                 } else if (opcion == 3) {
@@ -140,7 +140,7 @@ void iniciarPrograma() {
                         intento++;
                     } else {
                         menu();
-                        return;  // Sale del programa después de entrar al menú
+                        return;  
                     }
                 }
                 break;
@@ -344,7 +344,7 @@ void menu(){
 int usuario_existe(const char* usuario) {
     FILE *archivo = fopen("cuentas.bin", "rb");
     if (archivo == NULL) {
-        return 0; // El archivo no existe, así que el usuario no puede existir
+        return 0; 
     }
 
     char usuario_existente[LONGITUD + 1];
@@ -354,12 +354,12 @@ int usuario_existe(const char* usuario) {
         fread(clave, sizeof(char), LONGITUD + 1, archivo); // leer la clave correspondiente
         if (strcmp(usuario_existente, usuario) == 0) {
             fclose(archivo);
-            return 1; // El usuario ya existe
+            return 1; 
         }
     }
 
     fclose(archivo);
-    return 0; // El usuario no existe
+    return 0;
 }
 
 void registrarse() {
@@ -375,7 +375,7 @@ void registrarse() {
 
         if (strlen(usuario) == LONGITUD) {
             printf("\n\tNombre de usuario demasiado largo. Intente de nuevo.\n");
-            while (getchar() != '\n'); // Limpia el buffer
+            while (getchar() != '\n'); 
             continue;
         }
 
@@ -390,7 +390,7 @@ void registrarse() {
 
         if (strlen(clave) == LONGITUD) {
             printf("\n\tContrasena demasiado larga. Intente de nuevo.\n");
-            while (getchar() != '\n'); // Limpia el buffer
+            while (getchar() != '\n');
             continue;
         }
 
@@ -407,7 +407,7 @@ void registrarse() {
         printf("\n\t\t---------------------------------");
 
         fclose(archivo);
-        break; // Registro exitoso, salir del bucle
+        break; 
     }
 }
 int login(char *usuario, char *clave)
