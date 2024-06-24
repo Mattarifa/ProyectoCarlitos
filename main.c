@@ -90,49 +90,67 @@ int main(){
     iniciarPrograma();
     return 0;
 }
-void iniciarPrograma(){
-    char usuario[LONGITUD +1];
-    char clave[ LONGITUD +1];
-    int intento=0;
-    int ingresa=0;
+void iniciarPrograma() {
+    char usuario[LONGITUD + 1];
+    char clave[LONGITUD + 1];
+    int intento = 0;
+    int ingresa = 0;
     int opcion;
-   printf("\n\t\t-------------------------------------------------------\n");
-    printf("\n\t\tSi desea registrarse ingrese 1, para logearse ingrese 2:\n ");
-    printf("\n\t\t-------------------------------------------------------\n");
-    scanf("%d",&opcion);
-    fflush(stdin);
-    switch(opcion){
-    case 1:
-        registrarse();
-        printf("\n\tSi desea logearse ingrese 2, si desea salir ingrese 3: \n");
-        scanf("%d",&opcion);
-        fflush(stdin);
-        if (opcion == 2){
-        while(!ingresa && intento<3){
-        ingresa=login(usuario,clave);
-        if(!ingresa){
-            printf("\n\tUsuario y/o contrasenia incorrectos");
-            intento++;
-        }else if(ingresa){
-            menu();
-        }
-    }
-        }
-        break;
-    case 2:
-    while(!ingresa && intento<3){
-        ingresa=login(usuario,clave);
-        if(!ingresa){
-            printf("\n\tUsuario y/o contrasenia incorrectos");
-            intento++;
-        }else if(ingresa){
-            menu();
-        }
-    }
-        break;
 
-    case 3:
-        printf("\n\tQue tenga un lindo dia :D");
+    while (1) {
+        printf("\n\t\t-------------------------------------------------------\n");
+        printf("\n\t\tSi desea registrarse ingrese 1, para logearse ingrese 2:\n ");
+        printf("\n\t\tPara salir ingrese 3:\n");
+        printf("\n\t\t-------------------------------------------------------\n");
+        printf("\n\t\tOpcion: ");
+        scanf("%d", &opcion);
+        fflush(stdin);
+
+        switch(opcion) {
+            case 1:
+                registrarse();
+                printf("\n\tSi desea logearse ingrese 2, si desea salir ingrese 3: \n");
+                scanf("%d", &opcion);
+                fflush(stdin);
+                if (opcion == 2) {
+                    intento = 0;
+                    while (!ingresa && intento < 3) {
+                        ingresa = login(usuario, clave);
+                        if (!ingresa) {
+                            printf("\n\tUsuario y/o contrasenia incorrectos");
+                            intento++;
+                        } else {
+                            menu();
+                            return;  // Sale del programa después de entrar al menú
+                        }
+                    }
+                } else if (opcion == 3) {
+                    printf("\n\tQue tenga un lindo dia :D");
+                    return;
+                } else {
+                    printf("\n\tOpcion incorrecta, volviendo al menu principal...\n");
+                }
+                break;
+            case 2:
+                intento = 0;
+                while (!ingresa && intento < 3) {
+                    ingresa = login(usuario, clave);
+                    if (!ingresa) {
+                        printf("\n\tUsuario y/o contrasenia incorrectos");
+                        intento++;
+                    } else {
+                        menu();
+                        return;  // Sale del programa después de entrar al menú
+                    }
+                }
+                break;
+            case 3:
+                printf("\n\tQue tenga un lindo dia :D");
+                return;
+            default:
+                printf("\n\tOpcion incorrecta, ingrese una opcion valida: \n");
+                break;
+        }
     }
 }
 void menu(){
@@ -323,85 +341,125 @@ void menu(){
     }
 
 }
-void registrarse(){
-    FILE *archivos= fopen("cuentas.bin","ab");
-    if(archivos==NULL)
-    {
-        printf("error");
+int usuario_existe(const char* usuario) {
+    FILE *archivo = fopen("cuentas.bin", "rb");
+    if (archivo == NULL) {
+        return 0; // El archivo no existe, así que el usuario no puede existir
     }
-    else
-    {
 
-    char usuario[LONGITUD +1];
-    char clave[LONGITUD+1];
-    printf("\n\t\t\tREGISTRO\n");
-    printf("\n\t\t\t--------\n");
-    printf("\n\tIngrese un nombre de usuario: ");
-    fgets(usuario,LONGITUD+1,stdin);
-    usuario[strcspn(usuario, "\n")]='\0';///strcspn(usuario, "\n") devuelve la posición del primer carácter en usuario que es /n, /0 para eliminar el salto de linea
+    char usuario_existente[LONGITUD + 1];
+    char clave[LONGITUD + 1];
 
-    printf("\n\tIngrese una contrasena: ");
-    fgets(clave,LONGITUD+1,stdin);
-    clave[strcspn(clave,"\n")]='\0';
-
-    fwrite(usuario,sizeof(char),LONGITUD+1,archivos);
-    fwrite(clave,sizeof(char),LONGITUD+1,archivos);
-    printf("\n\t\t---------------------------------");
-    printf("\n\t\tUsuario registrado correctamente");
-    printf("\n\t\t---------------------------------");
+    while (fread(usuario_existente, sizeof(char), LONGITUD + 1, archivo) == LONGITUD + 1) {
+        fread(clave, sizeof(char), LONGITUD + 1, archivo); // leer la clave correspondiente
+        if (strcmp(usuario_existente, usuario) == 0) {
+            fclose(archivo);
+            return 1; // El usuario ya existe
+        }
     }
-    fclose(archivos);
+
+    fclose(archivo);
+    return 0; // El usuario no existe
 }
-int login(char *usuario, char *clave){
-    int flag=0;
-    FILE*archi=fopen("cuentas.bin","rb");
-    char archivoUsuario[LONGITUD+1];
-    char archivoClave[LONGITUD+1];
+
+void registrarse() {
+    char usuario[LONGITUD + 1];
+    char clave[LONGITUD + 1];
+
+    while (1) {
+        printf("\n\t\t\tREGISTRO\n");
+        printf("\n\t\t\t--------\n");
+        printf("\n\tIngrese un nombre de usuario (max %d caracteres): ", LONGITUD);
+        fgets(usuario, LONGITUD + 1, stdin);
+        usuario[strcspn(usuario, "\n")] = '\0';
+
+        if (strlen(usuario) == LONGITUD) {
+            printf("\n\tNombre de usuario demasiado largo. Intente de nuevo.\n");
+            while (getchar() != '\n'); // Limpia el buffer
+            continue;
+        }
+
+        if (usuario_existe(usuario)) {
+            printf("\n\tEl nombre de usuario ya está en uso. Por favor, elija otro.\n");
+            continue; // Vuelve a intentar registrarse
+        }
+
+        printf("\n\tIngrese una contrasena (max %d caracteres): ", LONGITUD);
+        fgets(clave, LONGITUD + 1, stdin);
+        clave[strcspn(clave, "\n")] = '\0';
+
+        if (strlen(clave) == LONGITUD) {
+            printf("\n\tContrasena demasiado larga. Intente de nuevo.\n");
+            while (getchar() != '\n'); // Limpia el buffer
+            continue;
+        }
+
+        FILE *archivo = fopen("cuentas.bin", "ab");
+        if (archivo == NULL) {
+            printf("Error al abrir el archivo");
+            return;
+        }
+
+        fwrite(usuario, sizeof(char), LONGITUD + 1, archivo);
+        fwrite(clave, sizeof(char), LONGITUD + 1, archivo);
+        printf("\n\t\t---------------------------------");
+        printf("\n\t\tUsuario registrado correctamente");
+        printf("\n\t\t---------------------------------");
+
+        fclose(archivo);
+        break; // Registro exitoso, salir del bucle
+    }
+}
+int login(char *usuario, char *clave)
+{
+    int flag = 0;
+    FILE* archi = fopen("cuentas.bin", "rb");
+    char archivoUsuario[LONGITUD + 1];
+    char archivoClave[LONGITUD + 1];
     if (archi == NULL)
     {
         printf("Error al abrir el archivo\n");
-        flag=1;
+        flag = 1;
     }
 
-    int i=0;
+    int i = 0;
 
-        printf ("\n\t\t\t\tINICIO DE SESION\n");
-        printf ("\t\t\t\t----------------\n");
-        printf("\n\tUSUARIO: ");
-        fgets(usuario,LONGITUD+1,stdin);
-        usuario[strcspn(usuario,"\n")]='\0';
-        printf("\n\tCLAVE: ");
+    printf ("\n\t\t\t\tINICIO DE SESION\n");
+    printf ("\t\t\t\t----------------\n");
+    printf("\n\tUSUARIO: ");
+    fgets(usuario, LONGITUD + 1, stdin);
+    usuario[strcspn(usuario, "\n")] = '\0';
+    printf("\n\tCLAVE: ");
 
-        while (1){
-            char caracter = getch();
-            if(caracter==13){
-                clave[i]='\0';
-                break;
-
-            }else if(caracter == 8){
-                if(i > 0){
-                    i--;
-                    printf("\b \b");
-                }
-            }else{
-                if (i < LONGITUD){
-                    printf("*");
-                    clave[i]= caracter;
-                    i++;
-                }
+    while (1) {
+        char caracter = getch();
+        if (caracter == 13) {  // Enter
+            clave[i] = '\0';
+            break;
+        } else if (caracter == 8) {  // Backspace
+            if (i > 0) {
+                i--;
+                printf("\b \b");
+            }
+        } else {
+            if (i < LONGITUD) {
+                printf("*");
+                clave[i] = caracter;
+                i++;
             }
         }
+    }
 
-         int autenticado=0;
-   while (fread(archivoUsuario, sizeof(char), LONGITUD + 1, archi) &&
+    int autenticado = 0;
+    while (fread(archivoUsuario, sizeof(char), LONGITUD + 1, archi) &&
            fread(archivoClave, sizeof(char), LONGITUD + 1, archi)) {
         if (strcmp(usuario, archivoUsuario) == 0 && strcmp(clave, archivoClave) == 0) {
-            autenticado=1;
+            autenticado = 1;
             break;
         }
-         }
-        fclose(archi);
-        return autenticado;
+    }
+    fclose(archi);
+    return autenticado;
 }
 void verAutosEnVenta(int *flag){
     AutoArchivo autoArch;
