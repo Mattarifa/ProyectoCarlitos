@@ -558,7 +558,7 @@ void agregarAuto(Auto** autos, int* count) {
 
     while (seguir == 's' || seguir == 'S') {
        printf("Ingrese las letras de la patente: ");
-        scanf("%s", autito.patente.letras);
+        scanf("%s", &autito.patente.letras);
         fflush(stdin);
         while(strlen(autito.patente.letras)!=3)
         {
@@ -589,13 +589,13 @@ void agregarAuto(Auto** autos, int* count) {
                  else
                     {
                         printf("Ingrese las letras de la patente ");
-                        scanf("%s", autito.patente.letras);
+                        scanf("%s", &autito.patente.letras);
                         fflush(stdin);
 
                         while(strlen(autito.patente.letras)!=3)
                         {
                             printf("Error: Ingrese letras validas a la patente: ");
-                            scanf("%s", autito.patente.letras);
+                            scanf("%s", &autito.patente.letras);
                             fflush(stdin);
                         }
 
@@ -616,7 +616,7 @@ void agregarAuto(Auto** autos, int* count) {
         if(c2=='s' || c2=='s')
         {
         printf("Ingrese la marca del auto: ");
-        scanf("%s", autito.marca);
+        scanf("%s", &autito.marca);
         while(strlen(autito.marca)<4 || strlen(autito.marca) > 15)
         {
             printf("Error: Ingrese una marca valida: ");
