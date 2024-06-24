@@ -11,7 +11,7 @@ int const consecionariaDNI = 12345678;
 
 typedef struct {        //patente
 	char letras[5];
-	int numeros;
+	char numeros[5];
 
 } Patente;
 
@@ -81,7 +81,7 @@ void agregarAuto(Auto**,int*);
 void recaudadoEnDeterminadoMes(int,int);
 float mayorGanancia();
 void Autos10anos();
-int buscarAutoPorPatente(AutoArchivo*,char[],int,int*);
+int buscarAutoPorPatente(AutoArchivo*,char[],char[],int*);
 int buscarPersonaPorDNI(int,Persona*);
 void cambiar_titular(int,int);
 float precioAdquisicion(int);
@@ -173,7 +173,7 @@ void menu(){
     int posVenta = 0;
 
     char patenteLetras[4];
-    int patenteNumeros = 0;
+    char patenteNumeros[4];
 
     int dniPersona=0;
 
@@ -235,13 +235,13 @@ void menu(){
                 }
 
                 printf("Ingrese los numeros de la petente del auto que quiere ver: ");
-                scanf("%d", &patenteNumeros);
+                scanf("%s", &patenteNumeros);
                 fflush(stdin);
 
-                while(patenteNumeros > 999 || patenteNumeros <100 || patenteNumeros > INT_MAX || patenteNumeros < INT_MIN)
+                while(strlen(patenteNumeros) != 3)
                 {
                     printf("ERROR: Ingrese numeros de 3 digitos: ");
-                    scanf("%d", &patenteNumeros);
+                    scanf("%s", &patenteNumeros);
                     fflush(stdin);
                 }
                 infoAuto(patenteLetras, patenteNumeros);
@@ -475,7 +475,7 @@ void verAutosEnVenta(int *flag){
             if(autoArch.dniTitular==consecionariaDNI)
             {
                 printf("-------------\n");
-                printf("Patente:    %s-%d\n", autoArch.patente.letras, autoArch.patente.numeros);
+                printf("Patente:    %s-%s\n", autoArch.patente.letras, autoArch.patente.numeros);
                 printf("Marca:      %s\n", autoArch.marca);
                 printf("Modelo:     %s\n", autoArch.modelo);
                 *flag=1;
@@ -507,7 +507,7 @@ int buscarPersonaPorDNI(int dni, Persona* persona) {
 
     return flag;
 }
-int buscarAutoPorPatente(AutoArchivo* autito,char letrasPatente[4],int numeroPatente,int *pos) {
+int buscarAutoPorPatente(AutoArchivo* autito,char letrasPatente[4],char numeroPatente[4],int *pos) {
     int flag = 0;
     AutoArchivo tempAuto;
     FILE* archivo = fopen("autosArch.bin", "r+b");
@@ -515,7 +515,7 @@ int buscarAutoPorPatente(AutoArchivo* autito,char letrasPatente[4],int numeroPat
             *pos=0;
         while (fread(&tempAuto, sizeof(AutoArchivo), 1, archivo) > 0) {
             (*pos)++;
-            if (strcmp(tempAuto.patente.letras,letrasPatente)==0 && tempAuto.patente.numeros==numeroPatente && tempAuto.dniTitular==consecionariaDNI) {
+            if (strcmp(tempAuto.patente.letras,letrasPatente)==0 && strcmp(tempAuto.patente.numeros, numeroPatente)==0 && tempAuto.dniTitular==consecionariaDNI) {
                 *autito = tempAuto;
                 flag = 1;
                 break;
@@ -568,12 +568,12 @@ void agregarAuto(Auto** autos, int* count) {
         }
 
         printf("Ingrese los numeros de la patente: ");
-        scanf("%d", &autito.patente.numeros);
+        scanf("%s", &autito.patente.numeros);
         fflush(stdin);
-        while(autito.patente.numeros < 100 || autito.patente.numeros > 999 || autito.patente.numeros > INT_MAX || autito.patente.numeros < INT_MIN)
+        while(strlen(autito.patente.numeros)!=3)
         {
             printf("Error: ingrese numeros validos para la patente: ");
-            scanf("%d", &autito.patente.numeros);
+            scanf("%s", &autito.patente.numeros);
             fflush(stdin);
         }
         while(buscarAutoPorPatente(&autito,autito.patente.letras,autito.patente.numeros,&pos)) // verificar que exista y que no este vendido ese auto
@@ -600,13 +600,13 @@ void agregarAuto(Auto** autos, int* count) {
                         }
 
                         printf("Ingrese los numeros de la patente: ");
-                        scanf("%d", &autito.patente.numeros);
+                        scanf("%s", &autito.patente.numeros);
                         fflush(stdin);
 
-                        while(autito.patente.numeros < 100 || autito.patente.numeros > 999)
+                        while(strlen(autito.patente.numeros)!=3)
                         {
                             printf("Error: ingrese numeros validos para la patente: ");
-                            scanf("%d", &autito.patente.numeros);
+                            scanf("%s", &autito.patente.numeros);
                             fflush(stdin);
                         }
 
@@ -690,10 +690,10 @@ void agregarAuto(Auto** autos, int* count) {
     }
 void agregarAutoArchivo(Auto* autos, int count) {
     AutoArchivo autoArch;
-    FILE* archivo = fopen("autosArch.bin", "ab");
+    FILE* archivo = fopen("autosArch.bin", "wb");
     if (archivo != NULL) {
         strncpy(autoArch.patente.letras, autos[count - 1].patente.letras, sizeof(autoArch.patente.letras));
-        autoArch.patente.numeros = autos[count - 1].patente.numeros;
+        strncpy(autoArch.patente.numeros, autos[count - 1].patente.numeros, sizeof(autoArch.patente.numeros));
         strncpy(autoArch.marca, autos[count - 1].marca, sizeof(autoArch.marca));
         strncpy(autoArch.modelo, autos[count - 1].modelo, sizeof(autoArch.modelo));
         autoArch.anio = autos[count - 1].anio;
@@ -785,7 +785,7 @@ void mostrarAutoArchivo(){
         while(fread(&autoArch, sizeof(AutoArchivo), 1, archivo) > 0)
         {
             printf("-------------\n");
-            printf("Patente:    %s-%d\n", autoArch.patente.letras, autoArch.patente.numeros);
+            printf("Patente:    %s-%s\n", autoArch.patente.letras, autoArch.patente.numeros);
             printf("Marca:      %s\n", autoArch.marca);
             printf("Modelo:     %s\n", autoArch.modelo);
         }
@@ -868,13 +868,13 @@ void agregarVentas(){
                     }
 
                     printf("Ingrese los numeros de la patente del auto a vender: ");
-                    scanf("%d", &v.autoAVender.numeros);
+                    scanf("%s", &v.autoAVender.numeros);
                     fflush(stdin);
 
-                    while(v.autoAVender.numeros < 100 || v.autoAVender.numeros > 999 || v.autoAVender.numeros > INT_MAX || v.autoAVender.numeros < INT_MIN)
+                    while(strlen(v.autoAVender.numeros)!=3)
                     {
                         printf("Error: ingrese numeros validos para la patente: ");
-                        scanf("%d", &v.autoAVender.numeros);
+                        scanf("%s", &v.autoAVender.numeros);
                         fflush(stdin);
                     }
                     pos = 0;
@@ -903,13 +903,13 @@ void agregarVentas(){
                             }
 
                             printf("Ingrese los numeros de la patente del auto a vender: ");
-                            scanf("%d", &v.autoAVender.numeros);
+                            scanf("%s", &v.autoAVender.numeros);
                             fflush(stdin);
 
-                            while(v.autoAVender.numeros < 100 || v.autoAVender.numeros > 999)
+                            while(strlen(v.autoAVender.numeros)!=3)
                             {
                                 printf("Error: ingrese numeros validos para la patente: ");
-                                scanf("%d", &v.autoAVender.numeros);
+                                scanf("%s", &v.autoAVender.numeros);
                                 fflush(stdin);
                             }
 
@@ -1023,7 +1023,7 @@ void mostrarVentas(){
         {
             printf("-------------\n");
             printf("Fecha:        %d/%d/%d\n", v.fecha.dia, v.fecha.mes, v.fecha.anio);
-            printf("Patente:      %s-%d\n", v.autoAVender.letras, v.autoAVender.numeros);
+            printf("Patente:      %s-%s\n", v.autoAVender.letras, v.autoAVender.numeros);
             printf("PrecioVenta:  %.2f\n", v.precioVenta);
             printf("Ganancia:     %.2f\n", v.ganancia);
             printf("DniComprador: %d\n", v.dniComprador);
@@ -1054,11 +1054,11 @@ void modificarAuto(Auto** autos,int* count){
         }
 
         printf("Ingrese los numeros de la patente: ");
-        scanf("%d", &patente.numeros);
+        scanf("%s", &patente.numeros);
         fflush(stdin);
-        while (patente.numeros < 100 || patente.numeros > 999) {
+        while (strlen(patente.numeros)!=3) {
             printf("Error: ingrese numeros validos para la patente: ");
-            scanf("%d", &patente.numeros);
+            scanf("%s", &patente.numeros);
             fflush(stdin);
         }
 
@@ -1089,11 +1089,11 @@ void modificarAuto(Auto** autos,int* count){
                         }
 
                         printf("Ingrese los nuevos numeros de la patente: ");
-                        scanf("%d", &autoArch.patente.numeros);
+                        scanf("%s", &autoArch.patente.numeros);
                         fflush(stdin);
-                        while (autoArch.patente.numeros < 100 || autoArch.patente.numeros > 999) {
+                        while (strlen(autoArch.patente.numeros)!=3) {
                             printf("Error: ingrese numeros validos para la patente: ");
-                            scanf("%d", &autoArch.patente.numeros);
+                            scanf("%s", &autoArch.patente.numeros);
                             fflush(stdin);
                         }
                         break;
@@ -1309,7 +1309,7 @@ void infoAuto (char letras[],int num){
                 {
                     encontro=1;
                     printf("-------------\n");
-                    printf("Patente:            %s-%d\n", autoArch.patente.letras, autoArch.patente.numeros);
+                    printf("Patente:            %s-%s\n", autoArch.patente.letras, autoArch.patente.numeros);
                     printf("Marca:              %s\n", autoArch.marca);
                     printf("Modelo:             %s\n", autoArch.modelo);
                     printf("Kms:                %d\n", autoArch.kms);
@@ -1339,7 +1339,7 @@ void verVentas (){
         while(fread(&ventas, sizeof(Venta), 1, archi)>0)
         {
             printf("\nFecha:   %d / %d / %d", ventas.fecha.dia, ventas.fecha.mes, ventas.fecha.anio);
-            printf("\nPatente: %s-%d\n", ventas.autoAVender.letras, ventas.autoAVender.numeros);
+            printf("\nPatente: %s-%s\n", ventas.autoAVender.letras, ventas.autoAVender.numeros);
         }
     printf("\n");
     fclose(archi);
@@ -1353,7 +1353,7 @@ void infoVenta (){
     Venta ventas;
     int seEncontro=0;
     char patLetras[4];
-    int patNum;
+    char patNum[4];
     int dia,mes,anio;
 
     if(archi != NULL)
@@ -1402,14 +1402,14 @@ void infoVenta (){
             }
 
             printf("Ingrese los numeros de la patente del auto que se vendio: ");
-            scanf("%d", &patNum);
+            scanf("%s", &patNum);
             fflush(stdin);
 
-        while(patNum < 100 || patNum > 999 || patNum > INT_MAX || patNum < INT_MIN)
+        while(strlen(patNum)!=3)
             {
                 printf("Error: Numero de la patente invalida o fuera de rango\n");
                 printf("Ingrese numeros validos para la patente: ");
-                scanf("%d", &patNum);
+                scanf("%s", &patNum);
                 fflush(stdin);
             }
 
@@ -1419,7 +1419,7 @@ void infoVenta (){
             if(ventas.fecha.dia==dia && ventas.fecha.mes==mes && ventas.fecha.anio==anio && strcmp(ventas.autoAVender.letras,patLetras)==0 && ventas.autoAVender.numeros==patNum)
             {
             printf("\nFecha:        %d/%d/%d", ventas.fecha.dia, ventas.fecha.mes, ventas.fecha.anio);
-            printf("\nPatente:      %s-%d", ventas.autoAVender.letras, ventas.autoAVender.numeros);
+            printf("\nPatente:      %s-%s", ventas.autoAVender.letras, ventas.autoAVender.numeros);
             printf("\nDNI comprador:%d", ventas.dniComprador);
             printf("\nDNI vendedor: %d", ventas.dniVendedor);
             printf("\nPrecio Venta: %.2f", ventas.precioVenta);
@@ -1506,7 +1506,7 @@ void Autos10anos() {
                     strcpy(autos[conta].marca,autoTemp.marca);
                     strcpy(autos[conta].modelo,autoTemp.modelo);
                     strcpy(autos[conta].patente.letras,autoTemp.patente.letras);
-                    autos[conta].patente.numeros = autoTemp.patente.numeros;
+                    strcpy(autos[conta].patente.numeros, autoTemp.patente.numeros);
                     conta++;
                 } else {
                     printf("Error: Se alcanzó el límite de almacenamiento de autos.\n");
