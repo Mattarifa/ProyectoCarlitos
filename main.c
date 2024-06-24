@@ -77,7 +77,7 @@ void infoPersona();
 void infoAuto();
 void verVentas();
 void infoVenta();
-void agregarAuto(Auto**,int*);
+void agregarAuto(Auto**,int*,int*);
 void recaudadoEnDeterminadoMes(int,int);
 float mayorGanancia();
 void Autos10anos();
@@ -124,7 +124,7 @@ void iniciarPrograma() {
                 while (!ingresa && intento < 3) {
                     ingresa = login(usuario, clave);
                     if (!ingresa) {
-                        printf("\n\tUsuario y/o contraseña incorrectos");
+                        printf("\n\tUsuario y/o contrasenia incorrectos");
                         intento++;
                     } else {
                         menu();
@@ -133,10 +133,10 @@ void iniciarPrograma() {
                 }
                 break;
             case 3:
-                printf("\n\tQue tenga un lindo día :D");
+                printf("\n\tQue tenga un lindo dia :D");
                 return;
             default:
-                printf("\n\tOpción incorrecta, ingrese una opción válida.\n");
+                printf("\n\tOpcion incorrecta, ingrese una opción valida.\n");
                 break;
         }
 
@@ -145,7 +145,7 @@ void iniciarPrograma() {
             while (!ingresa && intento < 3) {
                 ingresa = login(usuario, clave);
                 if (!ingresa) {
-                    printf("\n\tUsuario y/o contraseña incorrectos");
+                    printf("\n\tUsuario y/o contrasenia incorrectos");
                     intento++;
                 } else {
                     menu();
@@ -153,10 +153,10 @@ void iniciarPrograma() {
                 }
             }
         } else if (opcion2 == 3 && opcion1 == 1) {
-            printf("\n\tQue tenga un lindo día :D");
+            printf("\n\tQue tenga un lindo dia :D");
             return;
         } else if (opcion2 != 0 && opcion2 != 2 && opcion2 != 3) {
-            printf("\n\tOpción incorrecta, ingrese una opción válida.\n");
+           // printf("\n\tOpcion incorrecta, ingrese una opcion valida.\n");
         }
     }
 }
@@ -180,6 +180,7 @@ void menu(){
     int mes=0;
     int anio=0;
     int hayAutos;
+    int datosCargados=0;
 
     long long int tempDNI;
 
@@ -188,21 +189,21 @@ void menu(){
     {
         printf("\n\tingrese que desea hacer:\n");
         printf("\t____________________________\n");
-        printf("\tAgregar un auto: \t(1) |\n");
-        printf("\tVer lista de autos: \t(2) |\n");
-        printf("\tModificar un auto: \t(3) |\n");
-        printf("\tVer info de un auto: \t(4) |\n");
-        printf("\tAgregar una persona: \t(5) |\n");
-        printf("\tModificar una persona:\t(6) |\n");
-        printf("\tver lista de personas:\t(7) |\n");
-        printf("\tver info de persona:  \t(8) |\n");
-        printf("\tver autos en venta:  \t(9) |\n"); //con dni hardcodeado de consecionaria
-        printf("\tVer ventas:\t\t(10)|\n");
-        printf("\tver info de una venta:\t(11)|\n");
-        printf("\tVender un auto:\t\t(12)|\n");         //listo
-        printf("\tRecaudado en un mes\t(13)|\n");
-        printf("\tVer antiguedad de auto:\t(14)|\n");
-        printf("\tVer la mayor ganancia:\t(15)|\n");
+        printf("\tAgregar una persona: \t(1) |\n");
+        printf("\tAgregar un auto \t(2) |\n");
+        printf("\tVender un auto \t\t(3) |\n");
+        printf("\tLista de autos\t\t(4) |\n");
+        printf("\tLista de personas \t(5) |\n");
+        printf("\tLista de ventas \t(6) |\n");
+        printf("\tInfo de un auto \t(7) |\n");
+        printf("\tInfo de una persona \t(8) |\n");
+        printf("\tInfo de una venta \t(9) |\n"); //con dni hardcodeado de consecionaria
+        printf("\tModificar una auto \t(10)|\n");
+        printf("\tModificar un persona \t(11)|\n");
+        printf("\tAutos en venta\t\t(12)|\n");         //listo
+        printf("\tRecaudacion del mes\t(13)|\n");
+        printf("\tAutos antiguos\t\t(14)|\n");
+        printf("\tMayor ganancia \t\t(15)|\n");
         printf("\tSi desea salir:\t\t(16)|\n");
         printf("\t____________________________|\n\n");
         printf("\tOpcion:");
@@ -210,18 +211,31 @@ void menu(){
         switch(a)
         {
             case 1:
-                agregarAuto(&autos, &count);
-                agregarAutoArchivo(autos, count);           //listo
-                mostrarAutoArchivo();
+                agregarPersonas();
+                mostrarPersonas();
             break;
             case 2:
-                mostrarAutoArchivo();                   //listo
+                agregarAuto(&autos, &count,&datosCargados);
+                if(datosCargados)
+                {
+                    agregarAutoArchivo(autos, count);
+                }
+                mostrarAutoArchivo();
             break;
             case 3:
-                mostrarAutoArchivo();
-                modificarAuto();
+                agregarVentas();
+
             break;
-            case 4:                                                   //listo
+            case 4:
+                mostrarAutoArchivo();
+            break;
+            case 5:
+                mostrarPersonas();
+            break;
+            case 6:
+                verVentas();
+            break;
+            case 7:
                 mostrarAutoArchivo();
                 printf("Ingrese las letras de la patente del auto que quiere ver: ");
                 scanf("%s", &patenteLetras);
@@ -235,38 +249,18 @@ void menu(){
                 }
 
                 printf("Ingrese los numeros de la petente del auto que quiere ver: ");
-                scanf("%s", &patenteNumeros);
+                scanf("%d", &patenteNumeros);
                 fflush(stdin);
 
-                while(strlen(patenteNumeros) != 3)
+                while(patenteNumeros > 999 || patenteNumeros <100 || patenteNumeros > INT_MAX || patenteNumeros < INT_MIN)
                 {
                     printf("ERROR: Ingrese numeros de 3 digitos: ");
-                    scanf("%s", &patenteNumeros);
+                    scanf("%d", &patenteNumeros);
                     fflush(stdin);
                 }
                 infoAuto(patenteLetras, patenteNumeros);
             break;
-            case 5:                                     //listo
-                agregarPersonas();
-                mostrarPersonas();
-            break;
-            case 6:                                     // listo
-                mostrarPersonas();
-                printf("Ingrese el dni de la persona que desea modificar:");
-                scanf("%lld",&tempDNI);
-                while(tempDNI < 1000000 || tempDNI > 999999999 || tempDNI > INT_MAX || tempDNI < INT_MIN)
-                {
-                    printf("Error: dni invalido o fuera de rango\n");
-                    printf("Ingrese un dni valido:");
-                    scanf("%lld", &tempDNI);
-                }
-                dni = (int)tempDNI;
-                modificarPersona(dni);
-            break;
-            case 7:
-                mostrarPersonas();                       //listo
-            break;
-            case 8:                                        //listo
+            case 8:
 
                 mostrarPersonas();
                 printf("Ingrese dni de la persona que quiera ver: ");
@@ -281,25 +275,36 @@ void menu(){
                 dniPersona=(int)tempDNI;
                 infoPersona(dniPersona);
             break;
-            case 9:                                       //listo
+            case 9:
+                verVentas();
+                infoVenta();
+
+            break;
+            case 10:
+                mostrarAutoArchivo();
+                modificarAuto();
+            break;
+            case 11:
+                mostrarPersonas();
+                printf("Ingrese el dni de la persona que desea modificar:");
+                scanf("%lld",&tempDNI);
+                while(tempDNI < 1000000 || tempDNI > 999999999 || tempDNI > INT_MAX || tempDNI < INT_MIN)
+                {
+                    printf("Error: dni invalido o fuera de rango\n");
+                    printf("Ingrese un dni valido:");
+                    scanf("%lld", &tempDNI);
+                }
+                dni = (int)tempDNI;
+                modificarPersona(dni);
+            break;
+            case 12:
                 verAutosEnVenta(&hayAutos);
                 if(hayAutos!=1)
                 {
                     printf("No hay stock\n");
                 }
             break;
-            case 10:                                     //listo
-                verVentas();
-
-            break;
-            case 11:                                    //listo
-                verVentas();
-                infoVenta();
-            break;
-            case 12:                                    //listo
-                agregarVentas();
-            break;
-            case 13:                                    //listo
+            case 13:
                 verVentas();
                 printf("ingrese mes:");
                 scanf("%d",&mes);
@@ -323,13 +328,13 @@ void menu(){
                 }
                 recaudadoEnDeterminadoMes(mes,anio);
             break;
-            case 14:                                    //listo
+            case 14:
                 Autos10anos();
             break;
-            case 15:                                        //listo
+            case 15:
                     printf("La mayor ganancia fue de %.2f pesos",mayorGanancia());
             break;
-		  case 16:                                          //listo
+		  case 16:
             printf("\n\tHasta pronto");
             return;
 
@@ -549,12 +554,13 @@ void cambiar_titular(int pos, int dni) {
             printf("Error: No se pudo abrir el archivo.\n");
         }
 }
-void agregarAuto(Auto** autos, int* count) {
-    Auto autito;
+void agregarAuto(Auto** autos, int* count,int *datosCargados) {
+      Auto autito;
     Persona titular;
     char seguir = 's';
     char c2='s';
     int pos=0;
+
 
     while (seguir == 's' || seguir == 'S') {
        printf("Ingrese las letras de la patente: ");
@@ -582,7 +588,7 @@ void agregarAuto(Auto** autos, int* count) {
                 printf("Desea intentar con otra pantente?(s/n): ");
                 scanf(" %c",&c2);
                 fflush(stdin);
-                if(c2 != 's' && c2 != 'S')
+                if(c2 != 's' || c2 != 'S')
                 {
                     break;
                 }
@@ -613,7 +619,7 @@ void agregarAuto(Auto** autos, int* count) {
                         pos=0;
                     }
             }
-        if(c2=='s' || c2=='s')
+        if(c2=='s' || c2=='S')
         {
         printf("Ingrese la marca del auto: ");
         scanf("%s", &autito.marca);
@@ -656,7 +662,7 @@ void agregarAuto(Auto** autos, int* count) {
             fflush(stdin);
         }
 
-	printf("Ingrese el precio de adquisicion del auto: ");
+        printf("Ingrese el precio de adquisicion del auto: ");
         scanf("%f", &autito.precioDeAdquisicion);
 
         while(autito.precioDeAdquisicion < 0 || autito.precioDeAdquisicion > INT_MAX || autito.precioDeAdquisicion < INT_MIN)
@@ -676,21 +682,17 @@ void agregarAuto(Auto** autos, int* count) {
             }
             (*autos)[*count] = autito;
             (*count)++;
+            *datosCargados=1;
         }
-        else
-            {
-            printf("ERROR: El titular con DNI %d no existe\n", autito.Titular.dni);
-            }
-
         printf("Desea agregar otro auto? (s/n): ");
-        scanf("%c", &seguir);
+        scanf(" %c", &seguir);
         fflush(stdin);
         system("cls");
         }
     }
 void agregarAutoArchivo(Auto* autos, int count) {
     AutoArchivo autoArch;
-    FILE* archivo = fopen("autosArch.bin", "wb");
+    FILE* archivo = fopen("autosArch.bin", "ab");
     if (archivo != NULL) {
         strncpy(autoArch.patente.letras, autos[count - 1].patente.letras, sizeof(autoArch.patente.letras));
         strncpy(autoArch.patente.numeros, autos[count - 1].patente.numeros, sizeof(autoArch.patente.numeros));
@@ -1036,8 +1038,8 @@ void mostrarVentas(){
         printf("error");
     }
 }
-void modificarAuto(Auto** autos,int* count){
-    AutoArchivo autoArch;
+void modificarAuto(){
+   AutoArchivo autoArch;
     FILE *archivo = fopen("autosArch.bin", "r+b");
     Patente patente;
     char opcion;
@@ -1177,6 +1179,7 @@ void modificarPersona(int dni){
     char i;
     char seguir = 's';
     int encontrado=0;
+    long long int tempDNI;
 
     if(archivo!=NULL)
     {
@@ -1222,15 +1225,16 @@ void modificarPersona(int dni){
                     break;
                     case 'x':
                             printf("Ingrese un nuevo dni: ");
-                            scanf("%d", &persona.dni);
+                            scanf("%d", &tempDNI);
                             fflush(stdin);
-                            while(persona.dni < 1000000 || persona.dni > 99999999 || persona.dni>INT_MAX || persona.dni<INT_MIN)
+                            while(tempDNI < 1000000 || tempDNI > 99999999 || tempDNI>INT_MAX || tempDNI<INT_MIN)
                             {
                                 printf("\nERROR Dni invalido o fuera de rango \n");
                                 printf("\nIngrese un dni valido: ");
-                                scanf("%lld", &persona.dni);
+                                scanf("%lld", &tempDNI);
                                 fflush(stdin);
                             }
+                            persona.dni=(int)tempDNI;
                     break;
                     case 't':
                             printf("Ingrese nuevo telefono: ");
@@ -1309,7 +1313,7 @@ void infoAuto (char letras[],int num){
                 {
                     encontro=1;
                     printf("-------------\n");
-                    printf("Patente:            %s-%s\n", autoArch.patente.letras, autoArch.patente.numeros);
+                    printf("Patente:            %s-%d\n", autoArch.patente.letras, autoArch.patente.numeros);
                     printf("Marca:              %s\n", autoArch.marca);
                     printf("Modelo:             %s\n", autoArch.modelo);
                     printf("Kms:                %d\n", autoArch.kms);
