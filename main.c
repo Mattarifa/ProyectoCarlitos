@@ -71,7 +71,7 @@ void mostrarAutoArchivo();
 void mostrarPersonas();
 void agregarVentas();
 void mostrarVentas();
-void modificarAuto(Auto**,int*);
+void modificarAuto();
 void modificarPersona(int);
 void infoPersona();
 void infoAuto();
@@ -219,7 +219,7 @@ void menu(){
             break;
             case 3:
                 mostrarAutoArchivo();
-                modificarAuto(&autos,&count);
+                modificarAuto();
             break;
             case 4:                                                   //listo
                 mostrarAutoArchivo();
@@ -553,25 +553,68 @@ void agregarAuto(Auto** autos, int* count) {
     Auto autito;
     Persona titular;
     char seguir = 's';
+    char c2='s';
+    int pos=0;
 
     while (seguir == 's' || seguir == 'S') {
        printf("Ingrese las letras de la patente: ");
         scanf("%s", autito.patente.letras);
+        fflush(stdin);
         while(strlen(autito.patente.letras)!=3)
         {
             printf("Error: Ingrese letras validas a la patente: ");
-            fflush(stdin);
             scanf("%s", &autito.patente.letras);
+            fflush(stdin);
         }
 
         printf("Ingrese los numeros de la patente: ");
         scanf("%d", &autito.patente.numeros);
+        fflush(stdin);
         while(autito.patente.numeros < 100 || autito.patente.numeros > 999 || autito.patente.numeros > INT_MAX || autito.patente.numeros < INT_MIN)
         {
             printf("Error: ingrese numeros validos para la patente: ");
             scanf("%d", &autito.patente.numeros);
+            fflush(stdin);
         }
+        while(buscarAutoPorPatente(&autito,autito.patente.letras,autito.patente.numeros,&pos)) // verificar que exista y que no este vendido ese auto
+            {
+                printf("Error: La patente ingresada ya se encuentra en el sistema\n");
+                printf("Desea intentar con otra pantente?(s/n): ");
+                scanf(" %c",&c2);
+                fflush(stdin);
+                if(c2 != 's' && c2 != 'S')
+                {
+                    break;
+                }
+                 else
+                    {
+                        printf("Ingrese las letras de la patente ");
+                        scanf("%s", autito.patente.letras);
+                        fflush(stdin);
 
+                        while(strlen(autito.patente.letras)!=3)
+                        {
+                            printf("Error: Ingrese letras validas a la patente: ");
+                            scanf("%s", autito.patente.letras);
+                            fflush(stdin);
+                        }
+
+                        printf("Ingrese los numeros de la patente: ");
+                        scanf("%d", &autito.patente.numeros);
+                        fflush(stdin);
+
+                        while(autito.patente.numeros < 100 || autito.patente.numeros > 999)
+                        {
+                            printf("Error: ingrese numeros validos para la patente: ");
+                            scanf("%d", &autito.patente.numeros);
+                            fflush(stdin);
+                        }
+
+                        pos=0;
+                    }
+            }
+        if(c2=='s' || c2=='s')
+        {
         printf("Ingrese la marca del auto: ");
         scanf("%s", autito.marca);
         while(strlen(autito.marca)<4)
@@ -584,7 +627,7 @@ void agregarAuto(Auto** autos, int* count) {
         printf("Ingrese el modelo del auto: ");
         scanf("%s", &autito.modelo);
         fflush(stdin);
-        while(strlen(autito.modelo)<=3)
+        while(strlen(autito.modelo)<=2)
         {
             printf("Error: Ingrese un modelo valido: ");
             scanf("%s", &autito.modelo);
@@ -613,41 +656,7 @@ void agregarAuto(Auto** autos, int* count) {
             fflush(stdin);
         }
 
-        printf("Ingrese DNI del titular del auto: ");
-        scanf("%d", &autito.Titular.dni);
-        fflush(stdin);
-        while(autito.Titular.dni < 1000000 || autito.Titular.dni> 999999999 || autito.Titular.dni > INT_MAX || autito.Titular.dni < INT_MIN)
-        {
-            printf("Error: Ingresa un dni valido (mayor a 1 millon): ");
-            scanf("%d", &autito.Titular.dni);
-            fflush(stdin);
-        }
-
-
-        if (buscarPersonaPorDNI(autito.Titular.dni, &titular) || autito.Titular.dni == consecionariaDNI)
-            {
-            if (autito.Titular.dni != consecionariaDNI)
-            {
-                autito.Titular = titular;
-                strcpy(autito.Titular.rol, "comprador");
-            }
-            else
-            {
-                strcpy(autito.Titular.nombre, "Concesionaria");
-                autito.Titular.telefono = 0;
-                strcpy(autito.Titular.direccion, "Dirección de la Concesionaria");
-                strcpy(autito.Titular.rol, "vendedor");
-            }
-
-            printf("Ingrese el precio de adquisicion del auto: ");
-            scanf("%f", &autito.precioDeAdquisicion);
-            fflush(stdin);
-            while(autito.precioDeAdquisicion < 0)
-            {
-                printf("Error: Ingrese un precio de adquisicion valido: ");
-                scanf("%f", &autito.precioDeAdquisicion);
-                fflush(stdin);
-            }
+        autito.Titular.dni=consecionariaDNI;
 
 
             *autos = realloc(*autos, (*count + 1) * sizeof(Auto));
@@ -663,12 +672,13 @@ void agregarAuto(Auto** autos, int* count) {
             {
             printf("ERROR: El titular con DNI %d no existe\n", autito.Titular.dni);
             }
-        printf("Desea agregar mas autos? (s/n): ");
+
+        printf("Desea agregar otro auto? (s/n): ");
         scanf("%c", &seguir);
         fflush(stdin);
         system("cls");
+        }
     }
-}
 void agregarAutoArchivo(Auto* autos, int count) {
     AutoArchivo autoArch;
     FILE* archivo = fopen("autosArch.bin", "ab");
@@ -1017,7 +1027,7 @@ void mostrarVentas(){
         printf("error");
     }
 }
-void modificarAuto(Auto** autos,int* count){
+void modificarAuto(){
   AutoArchivo autoArch;
     FILE *archivo = fopen("autosArch.bin", "r+b");
     Patente patente;
