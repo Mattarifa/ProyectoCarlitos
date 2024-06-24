@@ -617,7 +617,7 @@ void agregarAuto(Auto** autos, int* count) {
         {
         printf("Ingrese la marca del auto: ");
         scanf("%s", autito.marca);
-        while(strlen(autito.marca)<4)
+        while(strlen(autito.marca)<4 || strlen(autito.marca) > 15)
         {
             printf("Error: Ingrese una marca valida: ");
             fflush(stdin);
@@ -627,7 +627,7 @@ void agregarAuto(Auto** autos, int* count) {
         printf("Ingrese el modelo del auto: ");
         scanf("%s", &autito.modelo);
         fflush(stdin);
-        while(strlen(autito.modelo)<=2)
+        while(strlen(autito.modelo)<3 || strlen(autito.modelo) > 15)
         {
             printf("Error: Ingrese un modelo valido: ");
             scanf("%s", &autito.modelo);
@@ -649,11 +649,20 @@ void agregarAuto(Auto** autos, int* count) {
         scanf("%d", &autito.kms);
         fflush(stdin);
 
-        while(autito.kms < 0 || autito.kms > INT_MAX || autito.kms < INT_MIN)
+        while(autito.kms < 0 || autito.kms > 999999999 || autito.kms > INT_MAX || autito.kms < INT_MIN)
         {
             printf("Error: Ingrese un kilometraje valido para el auto: ");
             scanf("%d", &autito.kms);
             fflush(stdin);
+        }
+
+	printf("Ingrese el precio de adquisicion del auto: ");
+        scanf("%f", &autito.precioDeAdquisicion);
+
+        while(autito.precioDeAdquisicion < 0 || autito.precioDeAdquisicion > INT_MAX || autito.precioDeAdquisicion < INT_MIN)
+        {
+            printf("Error: Ingrese un precio de adquisicion valido para el auto: ");
+            scanf("%f", &autito.precioDeAdquisicion);
         }
 
         autito.Titular.dni=consecionariaDNI;
@@ -1027,8 +1036,8 @@ void mostrarVentas(){
         printf("error");
     }
 }
-void modificarAuto(){
-  AutoArchivo autoArch;
+void modificarAuto(Auto** autos,int* count){
+    AutoArchivo autoArch;
     FILE *archivo = fopen("autosArch.bin", "r+b");
     Patente patente;
     char opcion;
@@ -1064,7 +1073,7 @@ void modificarAuto(){
             fseek(archivo, -sizeof(AutoArchivo), SEEK_CUR);
 
             do {
-                printf("Que dato desea modificar? (p(patente)/m(marca)/x(modelo)/a(anio)/k(kms)/d(dni)/v(precio)): ");
+                printf("Que dato desea modificar? (p(patente)/m(marca)/x(modelo)/a(anio)/k(kms)/v(precio)): ");
                 fflush(stdin);
                 scanf("%c", &opcion);
 
@@ -1092,11 +1101,23 @@ void modificarAuto(){
                         printf("Ingrese la nueva marca del auto: ");
                         scanf("%s", autoArch.marca);
                         fflush(stdin);
+                        while(strlen(autoArch.marca)<4 || strlen(autoArch.marca) >10)
+                        {
+                            printf("Error: Ingrese una marca valida: ");
+                            fflush(stdin);
+                            scanf("%s", &autoArch.marca);
+                        }
                         break;
                     case 'x':
                         printf("Ingrese el nuevo modelo del auto: ");
                         scanf("%s", autoArch.modelo);
                         fflush(stdin);
+                        while(strlen(autoArch.modelo)<4 || strlen(autoArch.modelo) >10 )
+                        {
+                            printf("Error: Ingrese un modelo valido: ");
+                            scanf("%s", &autoArch.modelo);
+                            fflush(stdin);
+                        }
                         break;
                     case 'a':
                         printf("Ingrese el nuevo anio del auto: ");
@@ -1112,17 +1133,23 @@ void modificarAuto(){
                         printf("Ingrese el nuevo kilometraje del auto: ");
                         scanf("%d", &autoArch.kms);
                         fflush(stdin);
-                        break;
-                    case 'd':
-                        mostrarPersonas();
-                        printf("Ingrese DNI del nuevo titular del auto: ");
-                        scanf("%d", &autoArch.dniTitular);
-                        fflush(stdin);
+                        while(autoArch.kms < 0  || autoArch.kms > 1000000000 || autoArch.kms > INT_MAX || autoArch.kms < INT_MIN)
+                        {
+                            printf("Error: Ingrese un kilometraje valido para el auto: ");
+                            scanf("%d", &autoArch.kms);
+                            fflush(stdin);
+                        }
                         break;
                     case 'v':
                         printf("Ingrese el nuevo precio de adquisicion del auto: ");
                         scanf("%f", &autoArch.precioDeAdquisicion);
                         fflush(stdin);
+                        while(autoArch.precioDeAdquisicion < 0)
+                        {
+                            printf("Error: Ingrese un precio de adquisicion valido: ");
+                            scanf("%f", &autoArch.precioDeAdquisicion);
+                            fflush(stdin);
+                        }
                         break;
                     default:
                         printf("Error: Debe ingresar una de las opciones\n");
@@ -1158,7 +1185,6 @@ void modificarPersona(int dni){
             if(persona.dni==dni)
             {
                 encontrado=1;
-                fseek(archivo, -sizeof(Persona), SEEK_CUR);
                 break;
             }
         }
@@ -1166,7 +1192,7 @@ void modificarPersona(int dni){
         {
             while (seguir == 's' || seguir=='S')
             {
-                printf("Que dato desea modificar? n(nombre)/d(direccion)/x(dni)/t(telefono)/r(rol): ");
+                printf("Que dato desea modificar? n(nombre)/d(direccion)/x(dni)/t(telefono): ");
                 scanf(" %c", &i);
                 fflush(stdin);
 
@@ -1174,34 +1200,47 @@ void modificarPersona(int dni){
                 {
                     case 'n':
                             printf("Ingrese nuevo nombre y apellido: ");
-                            scanf(" %39[^\n]", persona.nombre);
+                            scanf(" %39[^\n]", &persona.nombre);
                             fflush(stdin);
+                            while(strlen(persona.nombre)>39)
+                            {
+                                printf("Error: Ingrese un nombre no tan largo: ");
+                                scanf(" %39[^\n]", &persona.nombre);
+                                fflush(stdin);
+                            }
                     break;
                     case 'd':
                             printf("Ingrese una nueva direccion: "),
-                            scanf(" %29[^\n]", persona.direccion);
+                            scanf(" %29[^\n]", &persona.direccion);
                             fflush(stdin);
+                             while(strlen(persona.direccion)>49)
+                            {
+                                printf("Error: Direccion muy larga o fuera de rango: ");
+                                scanf(" %49[^\n]", &persona.direccion);
+                                fflush(stdin);
+                            }
                     break;
                     case 'x':
                             printf("Ingrese un nuevo dni: ");
                             scanf("%d", &persona.dni);
                             fflush(stdin);
+                            while(persona.dni < 1000000 || persona.dni > 99999999 || persona.dni>INT_MAX || persona.dni<INT_MIN)
+                            {
+                                printf("\nERROR Dni invalido o fuera de rango \n");
+                                printf("\nIngrese un dni valido: ");
+                                scanf("%lld", &persona.dni);
+                                fflush(stdin);
+                            }
                     break;
                     case 't':
                             printf("Ingrese nuevo telefono: ");
                             scanf("%lld", &persona.telefono);
                             fflush(stdin);
-                    break;
-                    case 'r':
-                            printf("Ingrese un nuevo rol(c/v): ");
-                            scanf(" %10s", persona.rol);
-                            fflush(stdin);
-
-                            while(strcmp(persona.rol,"comprador")!=0 && strcmp(persona.rol,"vendedor")!=0)
+                            while(persona.telefono < 1000000 || persona.telefono > 9999999999)
                             {
-                            printf("Ingrese un caracter valido(c/v): ");
-                            scanf("%s", persona.rol);
-                            fflush(stdin);
+                                printf("Error: Ingrese un telefono valido: ");
+                                scanf("%lld", &persona.telefono);
+                                fflush(stdin);
                             }
                     break;
                     default:
