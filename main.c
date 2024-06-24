@@ -206,7 +206,7 @@ void menu(){
         printf("\tMayor ganancia \t\t(15)|\n");
         printf("\tSi desea salir:\t\t(16)|\n");
         printf("\t____________________________|\n\n");
-        printf("\tOpcion:");
+        printf("\tOpcion: ");
         scanf("%d",&a);
         switch(a)
         {
@@ -249,13 +249,13 @@ void menu(){
                 }
 
                 printf("Ingrese los numeros de la petente del auto que quiere ver: ");
-                scanf("%d", &patenteNumeros);
+                scanf("%s", &patenteNumeros);
                 fflush(stdin);
 
-                while(patenteNumeros > 999 || patenteNumeros <100 || patenteNumeros > INT_MAX || patenteNumeros < INT_MIN)
+                while(strlen(patenteNumeros)!=3)
                 {
                     printf("ERROR: Ingrese numeros de 3 digitos: ");
-                    scanf("%d", &patenteNumeros);
+                    scanf("%s", &patenteNumeros);
                     fflush(stdin);
                 }
                 infoAuto(patenteLetras, patenteNumeros);
@@ -344,8 +344,8 @@ void menu(){
             break;
         }
         printf("\nDesea continuar en el menu?(s/n):");
+        scanf(" %c",&c);
         fflush(stdin);
-        scanf("%c",&c);
         system("cls");
     }
 
@@ -655,7 +655,7 @@ void agregarAuto(Auto** autos, int* count,int *datosCargados) {
         scanf("%d", &autito.kms);
         fflush(stdin);
 
-        while(autito.kms < 0 || autito.kms > 999999999 || autito.kms > INT_MAX || autito.kms < INT_MIN)
+        while(autito.kms < 0 || autito.kms > 300000 || autito.kms > INT_MAX || autito.kms < INT_MIN)
         {
             printf("Error: Ingrese un kilometraje valido para el auto: ");
             scanf("%d", &autito.kms);
@@ -1065,7 +1065,7 @@ void modificarAuto(){
         }
 
         while (fread(&autoArch, sizeof(AutoArchivo), 1, archivo) > 0) {
-            if (strcmp(autoArch.patente.letras, patente.letras) == 0 && autoArch.patente.numeros == patente.numeros) {
+            if (strcmp(autoArch.patente.letras, patente.letras) == 0 && strcmp(autoArch.patente.numeros, patente.numeros) == 0) {
                 encontrado = 1;
                 break;
             }
@@ -1103,7 +1103,7 @@ void modificarAuto(){
                         printf("Ingrese la nueva marca del auto: ");
                         scanf("%s", autoArch.marca);
                         fflush(stdin);
-                        while(strlen(autoArch.marca)<4 || strlen(autoArch.marca) >10)
+                        while(strlen(autoArch.marca)<4 || strlen(autoArch.marca) >15)
                         {
                             printf("Error: Ingrese una marca valida: ");
                             fflush(stdin);
@@ -1114,7 +1114,7 @@ void modificarAuto(){
                         printf("Ingrese el nuevo modelo del auto: ");
                         scanf("%s", autoArch.modelo);
                         fflush(stdin);
-                        while(strlen(autoArch.modelo)<4 || strlen(autoArch.modelo) >10 )
+                        while(strlen(autoArch.modelo)<4 || strlen(autoArch.modelo) >15)
                         {
                             printf("Error: Ingrese un modelo valido: ");
                             scanf("%s", &autoArch.modelo);
@@ -1135,7 +1135,7 @@ void modificarAuto(){
                         printf("Ingrese el nuevo kilometraje del auto: ");
                         scanf("%d", &autoArch.kms);
                         fflush(stdin);
-                        while(autoArch.kms < 0  || autoArch.kms > 1000000000 || autoArch.kms > INT_MAX || autoArch.kms < INT_MIN)
+                        while(autoArch.kms < 0  || autoArch.kms > 300000 || autoArch.kms > INT_MAX || autoArch.kms < INT_MIN)
                         {
                             printf("Error: Ingrese un kilometraje valido para el auto: ");
                             scanf("%d", &autoArch.kms);
@@ -1300,7 +1300,7 @@ void infoPersona (int dni){
     }
 
 }
-void infoAuto (char letras[],int num){
+void infoAuto (char letras[],char num[]){
 
     FILE* archi = fopen("autosArch.bin", "rb");
     AutoArchivo autoArch;
@@ -1309,11 +1309,11 @@ void infoAuto (char letras[],int num){
     {
         while(fread(&autoArch, sizeof(AutoArchivo), 1, archi)>0)
         {
-            if(strcmp(autoArch.patente.letras,letras)==0 && autoArch.patente.numeros==num)
+            if(strcmp(autoArch.patente.letras,letras)==0 && strcmp(autoArch.patente.numeros, num)==0)
                 {
                     encontro=1;
                     printf("-------------\n");
-                    printf("Patente:            %s-%d\n", autoArch.patente.letras, autoArch.patente.numeros);
+                    printf("Patente:            %s-%s\n", autoArch.patente.letras, autoArch.patente.numeros);
                     printf("Marca:              %s\n", autoArch.marca);
                     printf("Modelo:             %s\n", autoArch.modelo);
                     printf("Kms:                %d\n", autoArch.kms);
@@ -1366,9 +1366,9 @@ void infoVenta (){
         printf("Dia:");
         scanf("%d",&dia);
         fflush(stdin);
-        while(dia > 31 && dia < 1)
+        while(dia < 1 || dia > 31)
             {
-                printf("Error: ingrese un dia valido");
+                printf("\nError: ingrese un dia valido");
                 printf("Dia:");
                 scanf("%d",&dia);
                 fflush(stdin);
@@ -1376,9 +1376,9 @@ void infoVenta (){
         printf("Mes:");
         scanf("%d",&mes);
         fflush(stdin);
-        while(mes > 12 && mes < 1)
+        while(mes > 12 || mes < 1)
             {
-                printf("Error: ingrese un mes valido");
+                printf("\nError: ingrese un mes valido");
                 printf("Mes:");
                 scanf("%d",&mes);
                 fflush(stdin);
@@ -1386,9 +1386,9 @@ void infoVenta (){
         printf("Anio:");
         scanf("%d",&anio);
         fflush(stdin);
-        while(anio > 2024 && anio<1990)
+        while(anio > 2024 || anio<1990)
             {
-                printf("Error: ingrese un anio no mayor a 2024 ni menor a 1990");
+                printf("\nError: ingrese un anio no mayor a 2024 ni menor a 1990");
                 printf("Anio:");
                 scanf("%d",&anio);
                 fflush(stdin);
@@ -1420,7 +1420,7 @@ void infoVenta (){
 
         while(fread(&ventas, sizeof(Venta), 1, archi)>0)
         {
-            if(ventas.fecha.dia==dia && ventas.fecha.mes==mes && ventas.fecha.anio==anio && strcmp(ventas.autoAVender.letras,patLetras)==0 && ventas.autoAVender.numeros==patNum)
+            if(ventas.fecha.dia==dia && ventas.fecha.mes==mes && ventas.fecha.anio==anio && strcmp(ventas.autoAVender.letras,patLetras)==0 && strcmp(ventas.autoAVender.numeros, patNum) == 0)
             {
             printf("\nFecha:        %d/%d/%d", ventas.fecha.dia, ventas.fecha.mes, ventas.fecha.anio);
             printf("\nPatente:      %s-%s", ventas.autoAVender.letras, ventas.autoAVender.numeros);
@@ -1532,6 +1532,7 @@ void Autos10anos() {
             }
         }
 
+        printf("\nAutos menores a 10 anios: \n");
 
         for (int k = 0; k < conta; k++) {
             printf("Patente:    %s-%d\n", autos[k].patente.letras, autos[k].patente.numeros);
