@@ -95,7 +95,8 @@ void iniciarPrograma() {
     char clave[LONGITUD + 1];
     int intento = 0;
     int ingresa = 0;
-    int opcion;
+    char entrada[50]; 
+    int opcion1, opcion2; 
 
     while (1) {
         printf("\n\t\t-------------------------------------------------------\n");
@@ -103,53 +104,59 @@ void iniciarPrograma() {
         printf("\n\t\tPara salir ingrese 3:\n");
         printf("\n\t\t-------------------------------------------------------\n");
         printf("\n\t\tOpcion: ");
-        scanf("%d", &opcion);
-        fflush(stdin);
 
-        switch(opcion) {
+        // Leer la entrada completa
+        fgets(entrada, sizeof(entrada), stdin);
+
+        // Parsear las opciones
+        if (sscanf(entrada, "%d %d", &opcion1, &opcion2) != 1) {
+            printf("\n\t\tOpcion incorrecta, ingrese una opcion valida.\n");
+            continue; // Volver al inicio del bucle
+        }
+
+        
+        switch (opcion1) {
             case 1:
                 registrarse();
-                printf("\n\tSi desea logearse ingrese 2, si desea salir ingrese 3: \n");
-                scanf("%d", &opcion);
-                fflush(stdin);
-                if (opcion == 2) {
-                    intento = 0;
-                    while (!ingresa && intento < 3) {
-                        ingresa = login(usuario, clave);
-                        if (!ingresa) {
-                            printf("\n\tUsuario y/o contrasenia incorrectos");
-                            intento++;
-                        } else {
-                            menu();
-                            return;  
-                        }
-                    }
-                } else if (opcion == 3) {
-                    printf("\n\tQue tenga un lindo dia :D");
-                    return;
-                } else {
-                    printf("\n\tOpcion incorrecta, volviendo al menu principal...\n");
-                }
                 break;
             case 2:
                 intento = 0;
                 while (!ingresa && intento < 3) {
                     ingresa = login(usuario, clave);
                     if (!ingresa) {
-                        printf("\n\tUsuario y/o contrasenia incorrectos");
+                        printf("\n\tUsuario y/o contraseña incorrectos");
                         intento++;
                     } else {
                         menu();
-                        return;  
+                        return;
                     }
                 }
                 break;
             case 3:
-                printf("\n\tQue tenga un lindo dia :D");
+                printf("\n\tQue tenga un lindo día :D");
                 return;
             default:
-                printf("\n\tOpcion incorrecta, ingrese una opcion valida: \n");
+                printf("\n\tOpción incorrecta, ingrese una opción válida.\n");
                 break;
+        }
+
+       
+        if (opcion2 == 2 && opcion1 == 1) {
+            while (!ingresa && intento < 3) {
+                ingresa = login(usuario, clave);
+                if (!ingresa) {
+                    printf("\n\tUsuario y/o contraseña incorrectos");
+                    intento++;
+                } else {
+                    menu();
+                    return;
+                }
+            }
+        } else if (opcion2 == 3 && opcion1 == 1) {
+            printf("\n\tQue tenga un lindo día :D");
+            return;
+        } else if (opcion2 != 0 && opcion2 != 2 && opcion2 != 3) {
+            printf("\n\tOpción incorrecta, ingrese una opción válida.\n");
         }
     }
 }
